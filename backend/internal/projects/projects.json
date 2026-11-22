@@ -1,0 +1,99 @@
+[
+  {
+    "slug": "portfolio-platform",
+    "title": "Portfolio Platform",
+    "tagline": "This website: a 3D frontend with an event-driven Go backend",
+    "description": "A Three.js frontend backed by a Go API. Contact messages are stored in PostgreSQL and published to RabbitMQ. A worker sends the emails, with timed retry queues, a dead-letter queue for bad messages and a parking-lot queue for messages that keep failing.",
+    "category": "fullstack",
+    "status": "live",
+    "highlights": [
+      "RabbitMQ topology: retry queues at 5s / 30s / 2m, a DLQ and a parking lot",
+      "Publisher confirms and manual acks, so no message is silently lost",
+      "Per-IP token-bucket rate limiting, honeypot spam filter, panic-safe goroutines",
+      "Runs with zero infra in memory mode; one docker compose up for the full stack"
+    ],
+    "stack": ["Go", "RabbitMQ", "PostgreSQL", "Docker", "Three.js", "Vite"],
+    "repo": "https://github.com/razi-king/Portfolio",
+    "live": "https://razi-king.github.io/Portfolio/",
+    "featured": true
+  },
+  {
+    "slug": "expense-tracker",
+    "title": "Expense Tracker",
+    "tagline": "Full-stack finance tracker with stateless JWT security",
+    "description": "Users register, log in and track their expenses. A custom Spring Security filter validates JWTs on every request, passwords are BCrypt-hashed, and admin-only routes are protected by role.",
+    "category": "fullstack",
+    "status": "deploying",
+    "highlights": [
+      "Custom JwtAuthenticationFilter with stateless sessions",
+      "Role-based access: admin-only user listing",
+      "Astro + React frontend with Formik and Yup validation"
+    ],
+    "stack": ["Java", "Spring Boot", "Spring Security", "JWT", "MySQL", "Astro", "React", "Tailwind"],
+    "repo": "https://github.com/razi-king/Expense-Tracker",
+    "featured": true
+  },
+  {
+    "slug": "realtime-chat",
+    "title": "Real-time Chat",
+    "tagline": "Room-based chat over WebSockets",
+    "description": "Create or join a room and chat live. Spring Boot runs a STOMP message broker over WebSocket, rooms and messages are stored in MongoDB, and the React client gets updates instantly.",
+    "category": "fullstack",
+    "status": "deploying",
+    "highlights": [
+      "STOMP over SockJS with a Spring message broker",
+      "Custom error codes and a global exception handler",
+      "OpenAPI / Swagger docs for the REST endpoints"
+    ],
+    "stack": ["Java", "Spring Boot", "WebSocket", "STOMP", "MongoDB", "React", "Tailwind"],
+    "repo": "https://github.com/razi-king/SpringProjects",
+    "featured": true
+  },
+  {
+    "slug": "ecommerce-storefront",
+    "title": "E-Commerce Storefront",
+    "tagline": "Responsive shop UI, mobile-first",
+    "description": "A storefront with hero banners, a product grid, testimonials and a newsletter footer. It uses a shared layout with nested routes in React Router 7, styled with Tailwind CSS 4.",
+    "category": "frontend",
+    "status": "live",
+    "highlights": [
+      "Mobile-first layout across sm / md / lg breakpoints",
+      "Shared layout with nested routes and an Outlet"
+    ],
+    "stack": ["React 19", "React Router 7", "Tailwind CSS 4", "Vite"],
+    "repo": "https://github.com/razi-king/E_Com",
+    "live": "https://razi-king.github.io/E_Com/",
+    "featured": false
+  },
+  {
+    "slug": "react-components",
+    "title": "React Components Lab",
+    "tagline": "9 UI patterns built from scratch",
+    "description": "Accordion, image slider, tree view, QR generator, star rating, load-more pagination, a random color generator, a scroll indicator, and dark mode with a custom useLocalStorage hook.",
+    "category": "frontend",
+    "status": "live",
+    "highlights": [
+      "Recursive components for nested menus",
+      "Custom hook that persists the theme",
+      "API pagination with loading and error states"
+    ],
+    "stack": ["React", "Hooks", "Vite", "JavaScript"],
+    "repo": "https://github.com/razi-king/ReactJs-25-Project",
+    "live": "https://razi-king.github.io/ReactJs-25-Project/",
+    "featured": false
+  },
+  {
+    "slug": "smart-vendor",
+    "title": "Smart Vendor",
+    "tagline": "Multi-tenant SaaS for multi-outlet retailers",
+    "description": "Admin, Vendor and User portals with role-based access control and tenant data isolation. Inventory, order processing and vendor analytics modules are being built.",
+    "category": "fullstack",
+    "status": "in-progress",
+    "highlights": [
+      "Role-based access: Admin / Vendor / User",
+      "Tenant data isolation"
+    ],
+    "stack": ["Spring Boot", "PostgreSQL", "React"],
+    "featured": false
+  }
+]

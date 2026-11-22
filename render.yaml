@@ -1,0 +1,31 @@
+# Render Blueprint: deploys the Go API (with the email worker running in-process).
+# Render dashboard → New → Blueprint → pick this repo. Then fill in the secret values.
+services:
+  - type: web
+    name: razi-portfolio-api
+    runtime: docker
+    plan: free
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: RUN_WORKER
+        value: "true"
+      - key: ALLOWED_ORIGINS
+        value: https://razi-king.github.io
+      - key: MAIL_TO
+        value: raziinsane@gmail.com
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      # Secrets: set these in the Render dashboard, never in git.
+      - key: DATABASE_URL      # Neon connection string (add ?sslmode=require)
+        sync: false
+      - key: AMQP_URL          # CloudAMQP "Little Lemur" AMQP URL
+        sync: false
+      - key: SMTP_USER         # your Gmail address
+        sync: false
+      - key: SMTP_PASS         # a NEW Gmail app password
+        sync: false

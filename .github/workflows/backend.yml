@@ -1,0 +1,58 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [MainOne]
+    paths: ["backend/**", ".github/workflows/backend.yml"]
+  pull_request:
+    paths: ["backend/**", ".github/workflows/backend.yml"]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: portfolio
+          POSTGRES_PASSWORD: portfolio
+          POSTGRES_DB: portfolio
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U portfolio"
+          --health-interval 3s --health-retries 20
+      rabbitmq:
+        image: rabbitmq:3.13-alpine
+        ports: ["5672:5672"]
+        options: >-
+          --health-cmd "rabbitmq-diagnostics -q ping"
+          --health-interval 5s --health-retries 20
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+
+      - name: Format and vet
+        run: |
+          test -z "$(gofmt -l .)" || (gofmt -l . && exit 1)
+          go vet ./...
+
+      - name: Unit tests
+        run: go test -race -count=1 ./...
+
+      - name: Integration tests (real Postgres + RabbitMQ)
+        env:
+          DATABASE_URL: postgres://portfolio:portfolio@localhost:5432/portfolio?sslmode=disable
+          AMQP_URL: amqp://guest:guest@localhost:5672/
+        run: go test -tags integration -race -count=1 -v .
+
+      - name: Build Docker image
+        run: docker build -t portfolio-api .
