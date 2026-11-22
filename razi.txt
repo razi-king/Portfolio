@@ -1,9 +1,0 @@
-Hello World!
-<<<<<<< HEAD
-The Quick Brown Fox Jumps Over The Lazy Dog
-
-Hello World!
-The Quick Brown Fox Jumps Over The Lazy Dog
-
-=======
->>>>>>> parent of 5352ead (Changes In Razi.txt)
