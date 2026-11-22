@@ -1,19 +1,32 @@
 {
   "name": "razi-king-portfolio",
   "private": true,
-  "version": "1.0.0",
-  "type": "module",
+  "version": "2.0.0",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "sync-projects": "node scripts/sync-projects.mjs",
+    "predev": "npm run sync-projects",
+    "prebuild": "npm run sync-projects",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "npx serve out",
+    "lint": "npm run sync-projects && tsc --noEmit"
   },
   "dependencies": {
     "@fontsource/instrument-sans": "^5.3.0",
     "@fontsource/unbounded": "^5.3.0",
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.2",
+    "@react-three/postprocessing": "^3.2.2",
+    "next": "^16.4.6",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "three": "^0.187.0"
   },
   "devDependencies": {
-    "vite": "^8.3.8"
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/three": "^0.187.0",
+    "typescript": "^5.9.3"
   }
 }

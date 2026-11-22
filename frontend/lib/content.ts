@@ -1,5 +1,41 @@
-// Production work (Infohybrid) shown as a departure board.
-export const board = [
+import projectsJson from './projects.json'
+
+export type Status = 'live' | 'cleared' | 'awaiting' | 'deploying' | 'in-progress'
+export type Category = 'fullstack' | 'frontend' | 'backend'
+
+export interface Project {
+  slug: string
+  title: string
+  tagline: string
+  description: string
+  category: Category
+  status: Status
+  highlights: string[]
+  stack: string[]
+  repo?: string
+  live?: string
+  featured: boolean
+}
+
+/** Shared with the Go API (backend/internal/projects/projects.json). */
+export const projects = projectsJson as Project[]
+
+export const statusLabel: Record<Status, string> = {
+  live: 'In production',
+  cleared: 'Cleared by QA',
+  awaiting: 'Awaiting supplier',
+  deploying: 'Deploying soon',
+  'in-progress': 'Building',
+}
+
+export const categoryLabel: Record<Category, string> = {
+  fullstack: 'Full-stack',
+  frontend: 'Frontend',
+  backend: 'Backend',
+}
+
+/** Production work at Infohybrid, shown as a departure board. */
+export const board: { carrier: string; work: string; stack: string; status: Status }[] = [
   {
     carrier: 'TripJack',
     work: 'Integrated the full flight booking flow: search, branded fares, price validation, ancillaries, hold-then-confirm and ticketing.',
@@ -38,14 +74,6 @@ export const board = [
   },
 ]
 
-export const statusLabel = {
-  live: 'In production',
-  cleared: 'Cleared by QA',
-  awaiting: 'Awaiting supplier',
-  deploying: 'Deploying soon',
-  'in-progress': 'Building',
-}
-
 export const timeline = [
   {
     when: 'Jan 2026 – now',
@@ -70,6 +98,6 @@ export const timeline = [
 export const toolkit = [
   { group: 'Backend', items: ['Go', 'Goroutines', 'REST APIs', 'Java', 'Spring Boot', 'RabbitMQ', 'JWT'] },
   { group: 'Data', items: ['PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Azure Blob Storage'] },
-  { group: 'Frontend', items: ['React', 'Next.js', 'Astro', 'TypeScript', 'Tailwind CSS', 'Three.js'] },
+  { group: 'Frontend', items: ['Next.js', 'React', 'React Three Fiber', 'TypeScript', 'Astro', 'Tailwind CSS'] },
   { group: 'Tools', items: ['Docker', 'Git', 'Postman', 'Linux'] },
 ]

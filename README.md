@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:0d0221,45:3b1466,80:8E2DE2,100:c084fc&height=200&section=header&text=Razi%20King%20%E2%80%94%20Portfolio&fontSize=46&fontColor=FFD700&fontAlignY=38&desc=Three.js%20frontend%20%E2%80%A2%20Event-driven%20Go%20backend&descSize=18&descAlignY=60" alt="Razi King Portfolio"/>
+  <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:0d0221,45:3b1466,80:8E2DE2,100:c084fc&height=200&section=header&text=Razi%20King%20%E2%80%94%20Portfolio&fontSize=46&fontColor=FFD700&fontAlignY=38&desc=Next.js%20%2B%20React%20Three%20Fiber%20%E2%80%A2%20Event-driven%20Go%20backend&descSize=18&descAlignY=60" alt="Razi King Portfolio"/>
 </p>
 
 <p align="center">
@@ -10,7 +10,9 @@
   <img src="https://img.shields.io/badge/Go-1.23-00ADD8?style=flat-square&logo=go&logoColor=white"/>
   <img src="https://img.shields.io/badge/RabbitMQ-FF6600?style=flat-square&logo=rabbitmq&logoColor=white"/>
   <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Three.js-000000?style=flat-square&logo=threedotjs&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white"/>
+  <img src="https://img.shields.io/badge/React%20Three%20Fiber-000000?style=flat-square&logo=threedotjs&logoColor=white"/>
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white"/>
 </p>
 
 My personal portfolio. A 3D globe shows flight routes out of Mumbai, because that's my day job: I connect airlines to booking engines in Go. Behind the site is a small production-style Go backend. Contact messages go through **PostgreSQL → RabbitMQ → an email worker**, with timed retries, a dead-letter queue and a parking-lot queue.
@@ -19,7 +21,7 @@ My personal portfolio. A 3D globe shows flight routes out of Mumbai, because tha
 
 ```mermaid
 flowchart LR
-    V([Visitor]) -->|GitHub Pages| FE[Three.js site<br/>Vite]
+    V([Visitor]) -->|GitHub Pages| FE[Next.js static site<br/>React Three Fiber]
     FE -->|POST /api/contact| API[Go API<br/>net/http]
     FE -->|GET /api/projects| API
     API -->|insert, status=queued| PG[(PostgreSQL)]
@@ -45,9 +47,13 @@ flowchart LR
 | **Abuse protection** | Per-IP token-bucket rate limiting, a honeypot field, a 16 KB body limit, strict JSON decoding, and header-injection checks |
 | **Resilience** | Panic-safe goroutines (`safego.Go`), panic-recovery middleware, consumer reconnect with backoff, graceful shutdown |
 | **Zero-infra mode** | With no `DATABASE_URL` / `AMQP_URL`, it falls back to in-memory storage and an in-memory queue that use the **same retry policy** |
-| **Single source of truth** | `projects.json` is embedded in the Go binary *and* imported by the frontend at build time |
+| **Single source of truth** | `projects.json` is embedded in the Go binary *and* synced into the Next.js app before every build |
 
 ```
+frontend/                 Next.js (App Router, TypeScript), static export for GitHub Pages
+├── app/                  layout, page, global styles
+├── components/scene/     React Three Fiber: globe, flight routes, crown, bloom
+└── components/           sections, project hangar, contact form
 backend/
 ├── cmd/server        API (+ in-process worker when RUN_WORKER=true)
 ├── cmd/worker        standalone worker for separate scaling
@@ -78,9 +84,9 @@ cd backend && go run ./cmd/server
 # Full stack: API + worker + Postgres + RabbitMQ (management UI on :15672)
 cd backend && docker compose up --build
 
-# Frontend
+# Frontend (http://localhost:3000)
 cd frontend && npm install
-VITE_API_URL=http://localhost:8080 BASE_PATH=/ npm run dev
+NEXT_PUBLIC_API_URL=http://localhost:8080 BASE_PATH= npm run dev
 ```
 
 Tests:

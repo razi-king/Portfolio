@@ -2,8 +2,8 @@
   {
     "slug": "portfolio-platform",
     "title": "Portfolio Platform",
-    "tagline": "This website: a 3D frontend with an event-driven Go backend",
-    "description": "A Three.js frontend backed by a Go API. Contact messages are stored in PostgreSQL and published to RabbitMQ. A worker sends the emails, with timed retry queues, a dead-letter queue for bad messages and a parking-lot queue for messages that keep failing.",
+    "tagline": "This website: a Next.js 3D frontend with an event-driven Go backend",
+    "description": "A Next.js and React Three Fiber frontend backed by a Go API. Contact messages are stored in PostgreSQL and published to RabbitMQ. A worker sends the emails, with timed retry queues, a dead-letter queue for bad messages and a parking-lot queue for messages that keep failing.",
     "category": "fullstack",
     "status": "live",
     "highlights": [
@@ -12,7 +12,15 @@
       "Per-IP token-bucket rate limiting, honeypot spam filter, panic-safe goroutines",
       "Runs with zero infra in memory mode; one docker compose up for the full stack"
     ],
-    "stack": ["Go", "RabbitMQ", "PostgreSQL", "Docker", "Three.js", "Vite"],
+    "stack": [
+      "Go",
+      "RabbitMQ",
+      "PostgreSQL",
+      "Docker",
+      "Next.js",
+      "React Three Fiber",
+      "TypeScript"
+    ],
     "repo": "https://github.com/razi-king/Portfolio",
     "live": "https://razi-king.github.io/Portfolio/",
     "featured": true
@@ -29,7 +37,16 @@
       "Role-based access: admin-only user listing",
       "Astro + React frontend with Formik and Yup validation"
     ],
-    "stack": ["Java", "Spring Boot", "Spring Security", "JWT", "MySQL", "Astro", "React", "Tailwind"],
+    "stack": [
+      "Java",
+      "Spring Boot",
+      "Spring Security",
+      "JWT",
+      "MySQL",
+      "Astro",
+      "React",
+      "Tailwind"
+    ],
     "repo": "https://github.com/razi-king/Expense-Tracker",
     "featured": true
   },
@@ -45,7 +62,15 @@
       "Custom error codes and a global exception handler",
       "OpenAPI / Swagger docs for the REST endpoints"
     ],
-    "stack": ["Java", "Spring Boot", "WebSocket", "STOMP", "MongoDB", "React", "Tailwind"],
+    "stack": [
+      "Java",
+      "Spring Boot",
+      "WebSocket",
+      "STOMP",
+      "MongoDB",
+      "React",
+      "Tailwind"
+    ],
     "repo": "https://github.com/razi-king/SpringProjects",
     "featured": true
   },
@@ -60,7 +85,12 @@
       "Mobile-first layout across sm / md / lg breakpoints",
       "Shared layout with nested routes and an Outlet"
     ],
-    "stack": ["React 19", "React Router 7", "Tailwind CSS 4", "Vite"],
+    "stack": [
+      "React 19",
+      "React Router 7",
+      "Tailwind CSS 4",
+      "Vite"
+    ],
     "repo": "https://github.com/razi-king/E_Com",
     "live": "https://razi-king.github.io/E_Com/",
     "featured": false
@@ -77,7 +107,12 @@
       "Custom hook that persists the theme",
       "API pagination with loading and error states"
     ],
-    "stack": ["React", "Hooks", "Vite", "JavaScript"],
+    "stack": [
+      "React",
+      "Hooks",
+      "Vite",
+      "JavaScript"
+    ],
     "repo": "https://github.com/razi-king/ReactJs-25-Project",
     "live": "https://razi-king.github.io/ReactJs-25-Project/",
     "featured": false
@@ -93,7 +128,11 @@
       "Role-based access: Admin / Vendor / User",
       "Tenant data isolation"
     ],
-    "stack": ["Spring Boot", "PostgreSQL", "React"],
+    "stack": [
+      "Spring Boot",
+      "PostgreSQL",
+      "React"
+    ],
     "featured": false
   }
 ]
