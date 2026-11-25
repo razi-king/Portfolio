@@ -4,3 +4,4 @@ out/
 next-env.d.ts
 lib/projects.json
 *.tsbuildinfo
+.env*.local

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { SectionHead } from './Sections'
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '')
 const EMAIL = 'raziinsane@gmail.com'
@@ -104,11 +105,10 @@ export default function ContactForm() {
 
   return (
     <section className="section contact" id="contact" aria-labelledby="contact-title">
-      <div className="section-head">
-        <h2 id="contact-title">Send me a message</h2>
-        <p>It goes through my Go API and a RabbitMQ queue straight to my inbox. I reply within a day.</p>
-      </div>
-      <form className="form" ref={form} onSubmit={onSubmit} noValidate>
+      <SectionHead n="04" label="Contact" title="Send me a message" id="contact-title">
+        It goes through my Go API and a RabbitMQ queue straight to my inbox. I reply within a day.
+      </SectionHead>
+      <form className="form hud" data-reveal ref={form} onSubmit={onSubmit} noValidate>
         {field('name', 'Your name', <input {...aria('name')} autoComplete="name" required maxLength={80} />)}
         {field('email', 'Email', <input {...aria('email')} type="email" autoComplete="email" required />)}
         {field('subject', <>Subject <span className="optional">(optional)</span></>, <input {...aria('subject')} maxLength={120} />, true)}
@@ -118,7 +118,7 @@ export default function ContactForm() {
           <input id="f-website" name="website" tabIndex={-1} autoComplete="off" />
         </div>
         <div className="form-foot field-wide">
-          <button className="btn btn-gold" type="submit" disabled={state.kind === 'sending'}>
+          <button className="btn btn-primary" type="submit" disabled={state.kind === 'sending'}>
             Send message
           </button>
           <p

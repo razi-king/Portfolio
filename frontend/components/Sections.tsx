@@ -1,29 +1,27 @@
 import { board, timeline, toolkit } from '@/lib/content'
 import { StatusPill } from './StatusPill'
+import FlightStrip from './FlightStrip'
 
-export function Nav() {
+export function SectionHead({ n, label, title, id, children }: { n: string; label: string; title: string; id: string; children?: React.ReactNode }) {
   return (
-    <header className="nav">
-      <a className="brand" href="#top" aria-label="Razi King, home">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M3 18h18l-1.5-10-4.5 4-3-7-3 7-4.5-4z" />
-        </svg>
-        <span>Razi King</span>
-      </a>
-      <nav aria-label="Sections">
-        <a href="#routes">Work</a>
-        <a href="#hangar">Projects</a>
-        <a href="#journey">Journey</a>
-        <a href="#contact" className="nav-cta">Contact</a>
-      </nav>
-    </header>
+    <div className="section-head" data-reveal>
+      <p className="eyebrow">
+        <span>{n}</span>
+        {label}
+      </p>
+      <h2 id={id}>{title}</h2>
+      {children && <p>{children}</p>}
+    </div>
   )
 }
 
 export function Hero() {
   return (
     <section className="hero" id="top">
-      <p className="hero-kicker">Razi Ahmed, backend engineer in Go</p>
+      <p className="hero-kicker">
+        <span className="pulse-dot" aria-hidden="true" />
+        Razi Ahmed · Backend engineer in Go
+      </p>
       <h1 className="hero-title">
         <span className="line">Razi</span>
         <span className="line">King</span>
@@ -33,39 +31,79 @@ export function Hero() {
         a lot of goroutines.
       </p>
       <div className="hero-actions">
-        <a className="btn btn-gold" href="#hangar">See my projects</a>
+        <a className="btn btn-primary" href="#hangar">
+          See my projects
+          <span aria-hidden="true">→</span>
+        </a>
         <a className="btn btn-ghost" href="#contact">Get in touch</a>
       </div>
       <dl className="hero-facts">
-        <div><dt>Based in</dt><dd>Mumbai, India</dd></div>
-        <div><dt>Working at</dt><dd>Infohybrid, travel tech</dd></div>
-        <div><dt>Looking for</dt><dd>Backend roles in Go</dd></div>
+        <div className="hud">
+          <dt>Based in</dt>
+          <dd>Mumbai, India</dd>
+        </div>
+        <div className="hud">
+          <dt>Working at</dt>
+          <dd>Infohybrid</dd>
+        </div>
+        <div className="hud">
+          <dt>Looking for</dt>
+          <dd>Go backend roles</dd>
+        </div>
       </dl>
+      <FlightStrip />
     </section>
+  )
+}
+
+/** A slow ticker of the tools I use, between the hero and the work. */
+export function Marquee() {
+  const items = toolkit.flatMap((g) => g.items)
+  const row = (hidden?: boolean) => (
+    <ul aria-hidden={hidden || undefined}>
+      {items.map((i) => (
+        <li key={i}>{i}</li>
+      ))}
+    </ul>
+  )
+  return (
+    <div className="marquee" aria-label="Tools I use">
+      <div className="marquee-track">
+        {row()}
+        {row(true)}
+      </div>
+    </div>
   )
 }
 
 export function Routes() {
   return (
     <section className="section" id="routes" aria-labelledby="routes-title">
-      <div className="section-head">
-        <h2 id="routes-title">Routes I&apos;ve shipped</h2>
-        <p>Production work at Infohybrid. The code is private, so here is what each piece does.</p>
-      </div>
-      <div className="board" role="table" aria-label="Production work">
+      <SectionHead n="01" label="Departures" title="Routes I've shipped" id="routes-title">
+        Production work at Infohybrid. The code is private, so here is what each piece does.
+      </SectionHead>
+      <div className="board hud" role="table" aria-label="Production work" data-reveal>
         <div className="board-row board-head" role="row">
+          <span role="columnheader">Flight</span>
           <span role="columnheader">Carrier / system</span>
           <span role="columnheader">What I did</span>
           <span role="columnheader">Status</span>
         </div>
-        {board.map((r) => (
+        {board.map((r, i) => (
           <div className="board-row" role="row" key={r.carrier}>
+            <span className="board-code" role="cell">
+              RK-{String(i + 1).padStart(2, '0')}
+            </span>
             <span className="board-carrier" role="cell">
               {r.carrier}
               <small>{r.stack}</small>
             </span>
-            <span className="board-work" role="cell">{r.work}</span>
-            <span className="board-status" role="cell"><StatusPill status={r.status} /></span>
+            <span className="board-work" role="cell">
+              {r.work}
+            </span>
+            <span className="board-status" role="cell">
+              <StatusPill status={r.status} />
+            </span>
           </div>
         ))}
       </div>
@@ -76,10 +114,8 @@ export function Routes() {
 export function Journey() {
   return (
     <section className="section" id="journey" aria-labelledby="journey-title">
-      <div className="section-head">
-        <h2 id="journey-title">Journey so far</h2>
-      </div>
-      <ol className="timeline">
+      <SectionHead n="03" label="Flight log" title="Journey so far" id="journey-title" />
+      <ol className="timeline" data-reveal>
         {timeline.map((t) => (
           <li className="tl-item" key={t.role}>
             <p className="tl-when">{t.when}</p>
@@ -91,12 +127,14 @@ export function Journey() {
           </li>
         ))}
       </ol>
-      <div className="toolkit">
+      <div className="toolkit hud" data-reveal>
         {toolkit.map((g) => (
           <div className="tk-group" key={g.group}>
             <h3>{g.group}</h3>
             <ul className="stack">
-              {g.items.map((i) => <li key={i}>{i}</li>)}
+              {g.items.map((i) => (
+                <li key={i}>{i}</li>
+              ))}
             </ul>
           </div>
         ))}
@@ -108,12 +146,23 @@ export function Journey() {
 export function Footer() {
   return (
     <footer className="footer">
+      <div className="footer-sign">
+        <span className="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M3 18h18l-1.5-10-4.5 4-3-7-3 7-4.5-4z" />
+          </svg>
+        </span>
+        <div>
+          <strong>Razi King</strong>
+          <p>Go backend engineer · Mumbai</p>
+        </div>
+      </div>
       <div className="footer-links">
         <a href="https://github.com/razi-king">GitHub</a>
         <a href="https://www.linkedin.com/in/razi-ahmed-8s/">LinkedIn</a>
         <a href="mailto:raziinsane@gmail.com">raziinsane@gmail.com</a>
       </div>
-      <p>
+      <p className="footer-note">
         Built with Next.js, React Three Fiber, Go, RabbitMQ and PostgreSQL.{' '}
         <a href="https://github.com/razi-king/Portfolio">Read the source</a>.
       </p>

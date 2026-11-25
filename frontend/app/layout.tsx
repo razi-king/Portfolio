@@ -4,6 +4,8 @@ import '@fontsource/unbounded/latin-800.css'
 import '@fontsource/instrument-sans/latin-400.css'
 import '@fontsource/instrument-sans/latin-500.css'
 import '@fontsource/instrument-sans/latin-600.css'
+import '@fontsource/jetbrains-mono/latin-400.css'
+import '@fontsource/jetbrains-mono/latin-600.css'
 import './globals.css'
 
 const SITE = 'https://razi-king.github.io/Portfolio/'
@@ -24,7 +26,7 @@ export const metadata: Metadata = {
   },
 }
 
-export const viewport: Viewport = { themeColor: '#150C30' }
+export const viewport: Viewport = { themeColor: '#05060F' }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

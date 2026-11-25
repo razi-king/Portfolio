@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { categoryLabel, projects, type Category, type Project } from '@/lib/content'
 import { StatusPill } from './StatusPill'
+import { SectionHead } from './Sections'
 
 type Filter = 'all' | Category
 const FILTERS: { id: Filter; label: string }[] = [
@@ -13,7 +14,7 @@ const FILTERS: { id: Filter; label: string }[] = [
 
 function ProjectCard({ p }: { p: Project }) {
   return (
-    <article className={`project${p.featured ? ' project-featured' : ''}`}>
+    <article className={`project spot hud${p.featured ? ' project-featured' : ''}`}>
       <div className="project-top">
         <span className="project-cat">{categoryLabel[p.category]}</span>
         <StatusPill status={p.status} />
@@ -29,7 +30,7 @@ function ProjectCard({ p }: { p: Project }) {
       </ul>
       <div className="project-links">
         {p.live && (
-          <a className="btn btn-gold btn-sm" href={p.live} target="_blank" rel="noopener noreferrer">Open live site</a>
+          <a className="btn btn-primary btn-sm" href={p.live} target="_blank" rel="noopener noreferrer">Open live site</a>
         )}
         {p.repo && (
           <a className="btn btn-ghost btn-sm" href={p.repo} target="_blank" rel="noopener noreferrer">View code</a>
@@ -46,18 +47,17 @@ export default function Hangar() {
 
   return (
     <section className="section" id="hangar" aria-labelledby="hangar-title">
-      <div className="section-head">
-        <h2 id="hangar-title">The hangar</h2>
-        <p>Everything I&apos;ve built on my own time, with live demos where they&apos;re deployed.</p>
-      </div>
-      <div className="filters" role="group" aria-label="Filter projects">
+      <SectionHead n="02" label="Hangar" title="The hangar" id="hangar-title">
+        Everything I&apos;ve built on my own time, with live demos where they&apos;re deployed.
+      </SectionHead>
+      <div className="filters" role="group" aria-label="Filter projects" data-reveal>
         {FILTERS.map((f) => (
           <button key={f.id} className="chip" aria-pressed={filter === f.id} onClick={() => setFilter(f.id)}>
             {f.label}
           </button>
         ))}
       </div>
-      <div className={`projects${filter === 'all' ? '' : ' filtered'}`}>
+      <div className={`projects${filter === 'all' ? '' : ' filtered'}`} data-reveal>
         {shown.map((p) => <ProjectCard key={p.slug} p={p} />)}
       </div>
     </section>
