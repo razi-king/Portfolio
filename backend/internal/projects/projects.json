@@ -28,23 +28,24 @@
   {
     "slug": "expense-tracker",
     "title": "Expense Tracker",
-    "tagline": "Full-stack finance tracker with stateless JWT security",
-    "description": "Users register, log in and track their expenses. A custom Spring Security filter validates JWTs on every request, passwords are BCrypt-hashed, and admin-only routes are protected by role.",
+    "tagline": "Personal finance dashboard with secure JWT auth",
+    "description": "Track spending by category and month. A Spring Boot API with stateless JWT security serves a dashboard with monthly totals, a category donut, a 6-month trend chart, and add, edit and delete for expenses. Every query is scoped to the logged-in user.",
     "category": "fullstack",
     "status": "deploying",
     "highlights": [
-      "Custom JwtAuthenticationFilter with stateless sessions",
-      "Role-based access: admin-only user listing",
-      "Astro + React frontend with Formik and Yup validation"
+      "Fixed critical security bugs: cross-user data access, ADMIN self-registration, token crashes",
+      "Monthly summary endpoint: totals, daily average, top category, 6-month trend",
+      "MockMvc integration tests run against Postgres in CI"
     ],
     "stack": [
       "Java",
       "Spring Boot",
       "Spring Security",
       "JWT",
-      "MySQL",
+      "PostgreSQL",
       "Astro",
       "React",
+      "Recharts",
       "Tailwind"
     ],
     "repo": "https://github.com/razi-king/Expense-Tracker",
@@ -53,14 +54,14 @@
   {
     "slug": "realtime-chat",
     "title": "Real-time Chat",
-    "tagline": "Room-based chat over WebSockets",
-    "description": "Create or join a room and chat live. Spring Boot runs a STOMP message broker over WebSocket, rooms and messages are stored in MongoDB, and the React client gets updates instantly.",
+    "tagline": "Real-time chat rooms with presence and typing indicators",
+    "description": "Create or join a room and chat live. Spring Boot runs STOMP over WebSocket (SockJS); messages are stored in MongoDB with cursor-paginated history. The React client shows who is online, who is typing, and reconnects on its own.",
     "category": "fullstack",
     "status": "deploying",
     "highlights": [
-      "STOMP over SockJS with a Spring message broker",
-      "Custom error codes and a global exception handler",
-      "OpenAPI / Swagger docs for the REST endpoints"
+      "Online presence per room, cleaned up when a socket disconnects",
+      "Messages in an indexed collection, so rooms never hit MongoDB’s 16 MB limit",
+      "Live STOMP-over-SockJS integration test in CI"
     ],
     "stack": [
       "Java",
@@ -76,19 +77,21 @@
   },
   {
     "slug": "ecommerce-storefront",
-    "title": "E-Commerce Storefront",
-    "tagline": "Responsive shop UI, mobile-first",
-    "description": "A storefront with hero banners, a product grid, testimonials and a newsletter footer. It uses a shared layout with nested routes in React Router 7, styled with Tailwind CSS 4.",
+    "title": "Kumo Fashion Store",
+    "tagline": "A shop you can actually use, from browsing to checkout",
+    "description": "Browse, filter and sort products, pick a size and colour, manage your bag and check out with validated delivery details. Cart state uses useReducer and Context, persisted to localStorage, with stock limits enforced.",
     "category": "frontend",
     "status": "live",
     "highlights": [
-      "Mobile-first layout across sm / md / lg breakpoints",
-      "Shared layout with nested routes and an Outlet"
+      "Filters live in the URL, so any view can be shared",
+      "Cart, checkout with validation, order confirmation",
+      "Responsive down to phone size"
     ],
     "stack": [
       "React 19",
       "React Router 7",
       "Tailwind CSS 4",
+      "Context + useReducer",
       "Vite"
     ],
     "repo": "https://github.com/razi-king/E_Com",
@@ -98,20 +101,20 @@
   {
     "slug": "react-components",
     "title": "React Components Lab",
-    "tagline": "9 UI patterns built from scratch",
-    "description": "Accordion, image slider, tree view, QR generator, star rating, load-more pagination, a random color generator, a scroll indicator, and dark mode with a custom useLocalStorage hook.",
+    "tagline": "9 accessible UI components in one app",
+    "description": "Accordion, image slider, tree view, QR generator, star rating, load-more pagination, colour generator, scroll indicator and a persisted theme toggle. Each is written from scratch with hooks and handles keyboard use plus loading and error states.",
     "category": "frontend",
     "status": "live",
     "highlights": [
-      "Recursive components for nested menus",
-      "Custom hook that persists the theme",
-      "API pagination with loading and error states"
+      "Recursive tree with ARIA roles",
+      "Abortable useFetch and a useLocalStorage custom hook",
+      "QR codes downloadable as PNG through a canvas"
     ],
     "stack": [
-      "React",
+      "React 19",
       "Hooks",
       "Vite",
-      "JavaScript"
+      "Tailwind CSS"
     ],
     "repo": "https://github.com/razi-king/ReactJs-25-Project",
     "live": "https://razi-king.github.io/ReactJs-25-Project/",
