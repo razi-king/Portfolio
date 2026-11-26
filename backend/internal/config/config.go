@@ -25,26 +25,30 @@ type Config struct {
 	MailFrom string
 	MailTo   string
 
-	RateLimitPerMinute int
-	ShutdownTimeout    time.Duration
+	RateLimitPerMinute     int
+	FareRateLimitPerMinute int
+	FaresSecret            string // signs fare offer IDs; empty = random per process
+	ShutdownTimeout        time.Duration
 }
 
 // Load reads the environment and applies defaults.
 func Load() Config {
 	return Config{
-		Port:               env("PORT", "8080"),
-		DatabaseURL:        os.Getenv("DATABASE_URL"),
-		AMQPURL:            os.Getenv("AMQP_URL"),
-		AllowedOrigins:     split(env("ALLOWED_ORIGINS", "http://localhost:5173,https://razi-king.github.io")),
-		RunWorker:          envBool("RUN_WORKER", true),
-		SMTPHost:           os.Getenv("SMTP_HOST"),
-		SMTPPort:           env("SMTP_PORT", "587"),
-		SMTPUser:           os.Getenv("SMTP_USER"),
-		SMTPPass:           os.Getenv("SMTP_PASS"),
-		MailFrom:           env("MAIL_FROM", os.Getenv("SMTP_USER")),
-		MailTo:             env("MAIL_TO", "raziinsane@gmail.com"),
-		RateLimitPerMinute: envInt("RATE_LIMIT_PER_MINUTE", 5),
-		ShutdownTimeout:    10 * time.Second,
+		Port:                   env("PORT", "8080"),
+		DatabaseURL:            os.Getenv("DATABASE_URL"),
+		AMQPURL:                os.Getenv("AMQP_URL"),
+		AllowedOrigins:         split(env("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:5173,https://razi-king.github.io")),
+		RunWorker:              envBool("RUN_WORKER", true),
+		SMTPHost:               os.Getenv("SMTP_HOST"),
+		SMTPPort:               env("SMTP_PORT", "587"),
+		SMTPUser:               os.Getenv("SMTP_USER"),
+		SMTPPass:               os.Getenv("SMTP_PASS"),
+		MailFrom:               env("MAIL_FROM", os.Getenv("SMTP_USER")),
+		MailTo:                 env("MAIL_TO", "raziinsane@gmail.com"),
+		RateLimitPerMinute:     envInt("RATE_LIMIT_PER_MINUTE", 5),
+		FareRateLimitPerMinute: envInt("FARE_RATE_LIMIT_PER_MINUTE", 60),
+		FaresSecret:            os.Getenv("FARES_SECRET"),
+		ShutdownTimeout:        10 * time.Second,
 	}
 }
 

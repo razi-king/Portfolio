@@ -1,0 +1,361 @@
+{
+ "request": {
+  "from": "BOM",
+  "to": "DXB",
+  "date": "2026-12-20",
+  "return": "2026-12-27"
+ },
+ "search": {
+  "itineraries": [
+   {
+    "outbound": {
+     "id": "eyJpZCI6IiIsInN1cHBsaWVyIjoiQWVyb0h1YiIsImNhcnJpZXIiOiJNb25zb29uIEpldCIsImZsaWdodCI6Ik1KIDU1NiIsImJyYW5kIjoiU2F2ZXIiLCJmcm9tIjoiQk9NIiwidG8iOiJEWEIiLCJkYXRlIjoiMjAyNi0xMi0yMCIsImRlcGFydCI6IjIwOjM1IiwiYXJyaXZlIjoiMjM6MjYiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjo5MDUwLCJ0YXhlcyI6MTc0MCwidG90YWwiOjEwNzkwLCJjdXJyZW5jeSI6IklOUiJ9.N0vQkdlrIYLDhBz8ITXhzqit",
+     "supplier": "AeroHub",
+     "carrier": "Monsoon Jet",
+     "flight": "MJ 556",
+     "brand": "Saver",
+     "from": "BOM",
+     "to": "DXB",
+     "date": "2026-12-20",
+     "depart": "20:35",
+     "arrive": "23:26",
+     "durationMin": 171,
+     "base": 9050,
+     "taxes": 1740,
+     "total": 10790,
+     "currency": "INR"
+    },
+    "return": {
+     "id": "eyJpZCI6IiIsInN1cHBsaWVyIjoiQWVyb0h1YiIsImNhcnJpZXIiOiJNb25zb29uIEpldCIsImZsaWdodCI6Ik1KIDEzNyIsImJyYW5kIjoiU2F2ZXIiLCJmcm9tIjoiRFhCIiwidG8iOiJCT00iLCJkYXRlIjoiMjAyNi0xMi0yNyIsImRlcGFydCI6IjEwOjU1IiwiYXJyaXZlIjoiMTM6NDYiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjo5NjMwLCJ0YXhlcyI6MTgxMCwidG90YWwiOjExNDQwLCJjdXJyZW5jeSI6IklOUiJ9.K3-5VbZu7zwa2nAnyEFuOVw9",
+     "supplier": "AeroHub",
+     "carrier": "Monsoon Jet",
+     "flight": "MJ 137",
+     "brand": "Saver",
+     "from": "DXB",
+     "to": "BOM",
+     "date": "2026-12-27",
+     "depart": "10:55",
+     "arrive": "13:46",
+     "durationMin": 171,
+     "base": 9630,
+     "taxes": 1810,
+     "total": 11440,
+     "currency": "INR"
+    },
+    "total": 22230
+   },
+   {
+    "outbound": {
+     "id": "eyJpZCI6IiIsInN1cHBsaWVyIjoiRmFsY29uIERpcmVjdCIsImNhcnJpZXIiOiJGYWxjb24gQWlyd2F5cyIsImZsaWdodCI6IkZBIDEzMSIsImJyYW5kIjoiU2F2ZXIiLCJmcm9tIjoiQk9NIiwidG8iOiJEWEIiLCJkYXRlIjoiMjAyNi0xMi0yMCIsImRlcGFydCI6IjE4OjUwIiwiYXJyaXZlIjoiMjE6NDEiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjo5OTEwLCJ0YXhlcyI6MTg0MCwidG90YWwiOjExNzUwLCJjdXJyZW5jeSI6IklOUiJ9.AUCNADwFW97EkANYeFg_Kwpt",
+     "supplier": "Falcon Direct",
+     "carrier": "Falcon Airways",
+     "flight": "FA 131",
+     "brand": "Saver",
+     "from": "BOM",
+     "to": "DXB",
+     "date": "2026-12-20",
+     "depart": "18:50",
+     "arrive": "21:41",
+     "durationMin": 171,
+     "base": 9910,
+     "taxes": 1840,
+     "total": 11750,
+     "currency": "INR"
+    },
+    "return": {
+     "id": "eyJpZCI6IiIsInN1cHBsaWVyIjoiRmFsY29uIERpcmVjdCIsImNhcnJpZXIiOiJGYWxjb24gQWlyd2F5cyIsImZsaWdodCI6IkZBIDg5NiIsImJyYW5kIjoiU2F2ZXIiLCJmcm9tIjoiRFhCIiwidG8iOiJCT00iLCJkYXRlIjoiMjAyNi0xMi0yNyIsImRlcGFydCI6IjA3OjM1IiwiYXJyaXZlIjoiMTA6MjYiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjoxMTQ5MCwidGF4ZXMiOjIwMzAsInRvdGFsIjoxMzUyMCwiY3VycmVuY3kiOiJJTlIifQ.pSOb3HjTirVbiy3agKSSVpIL",
+     "supplier": "Falcon Direct",
+     "carrier": "Falcon Airways",
+     "flight": "FA 896",
+     "brand": "Saver",
+     "from": "DXB",
+     "to": "BOM",
+     "date": "2026-12-27",
+     "depart": "07:35",
+     "arrive": "10:26",
+     "durationMin": 171,
+     "base": 11490,
+     "taxes": 2030,
+     "total": 13520,
+     "currency": "INR"
+    },
+    "total": 25270
+   },
+   {
+    "outbound": {
+     "id": "eyJpZCI6IiIsInN1cHBsaWVyIjoiQWVyb0h1YiIsImNhcnJpZXIiOiJTYWZmcm9uIEFpciIsImZsaWdodCI6IlNGIDQ5NyIsImJyYW5kIjoiU2F2ZXIiLCJmcm9tIjoiQk9NIiwidG8iOiJEWEIiLCJkYXRlIjoiMjAyNi0xMi0yMCIsImRlcGFydCI6IjE2OjU1IiwiYXJyaXZlIjoiMTk6NDYiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjoxMTE1MCwidGF4ZXMiOjE5OTAsInRvdGFsIjoxMzE0MCwiY3VycmVuY3kiOiJJTlIifQ.mgHx8SWbZEEeDF7dPieYhAIF",
+     "supplier": "AeroHub",
+     "carrier": "Saffron Air",
+     "flight": "SF 497",
+     "brand": "Saver",
+     "from": "BOM",
+     "to": "DXB",
+     "date": "2026-12-20",
+     "depart": "16:55",
+     "arrive": "19:46",
+     "durationMin": 171,
+     "base": 11150,
+     "taxes": 1990,
+     "total": 13140,
+     "currency": "INR"
+    },
+    "return": {
+     "id": "eyJpZCI6IiIsInN1cHBsaWVyIjoiQWVyb0h1YiIsImNhcnJpZXIiOiJTYWZmcm9uIEFpciIsImZsaWdodCI6IlNGIDM3MCIsImJyYW5kIjoiU2F2ZXIiLCJmcm9tIjoiRFhCIiwidG8iOiJCT00iLCJkYXRlIjoiMjAyNi0xMi0yNyIsImRlcGFydCI6IjA2OjUwIiwiYXJyaXZlIjoiMDk6NDEiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjoxMDk1MCwidGF4ZXMiOjE5NjAsInRvdGFsIjoxMjkxMCwiY3VycmVuY3kiOiJJTlIifQ.SCkAjfKRndAVXUozIJSmFEIP",
+     "supplier": "AeroHub",
+     "carrier": "Saffron Air",
+     "flight": "SF 370",
+     "brand": "Saver",
+     "from": "DXB",
+     "to": "BOM",
+     "date": "2026-12-27",
+     "depart": "06:50",
+     "arrive": "09:41",
+     "durationMin": 171,
+     "base": 10950,
+     "taxes": 1960,
+     "total": 12910,
+     "currency": "INR"
+    },
+    "total": 26050
+   },
+   {
+    "outbound": {
+     "id": "eyJpZCI6IiIsInN1cHBsaWVyIjoiQWVyb0h1YiIsImNhcnJpZXIiOiJNb25zb29uIEpldCIsImZsaWdodCI6Ik1KIDU1NiIsImJyYW5kIjoiRmxleGkiLCJmcm9tIjoiQk9NIiwidG8iOiJEWEIiLCJkYXRlIjoiMjAyNi0xMi0yMCIsImRlcGFydCI6IjIwOjM1IiwiYXJyaXZlIjoiMjM6MjYiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjoxMjA3MCwidGF4ZXMiOjIxMDAsInRvdGFsIjoxNDE3MCwiY3VycmVuY3kiOiJJTlIifQ.qdGT8AuSvizRksnQkalNB--p",
+     "supplier": "AeroHub",
+     "carrier": "Monsoon Jet",
+     "flight": "MJ 556",
+     "brand": "Flexi",
+     "from": "BOM",
+     "to": "DXB",
+     "date": "2026-12-20",
+     "depart": "20:35",
+     "arrive": "23:26",
+     "durationMin": 171,
+     "base": 12070,
+     "taxes": 2100,
+     "total": 14170,
+     "currency": "INR"
+    },
+    "return": {
+     "id": "eyJpZCI6IiIsInN1cHBsaWVyIjoiQWVyb0h1YiIsImNhcnJpZXIiOiJNb25zb29uIEpldCIsImZsaWdodCI6Ik1KIDEzNyIsImJyYW5kIjoiRmxleGkiLCJmcm9tIjoiRFhCIiwidG8iOiJCT00iLCJkYXRlIjoiMjAyNi0xMi0yNyIsImRlcGFydCI6IjEwOjU1IiwiYXJyaXZlIjoiMTM6NDYiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjoxMjg0MCwidGF4ZXMiOjIxOTAsInRvdGFsIjoxNTAzMCwiY3VycmVuY3kiOiJJTlIifQ.IGjk1-vX2UW-L7tGUCkLUuXt",
+     "supplier": "AeroHub",
+     "carrier": "Monsoon Jet",
+     "flight": "MJ 137",
+     "brand": "Flexi",
+     "from": "DXB",
+     "to": "BOM",
+     "date": "2026-12-27",
+     "depart": "10:55",
+     "arrive": "13:46",
+     "durationMin": 171,
+     "base": 12840,
+     "taxes": 2190,
+     "total": 15030,
+     "currency": "INR"
+    },
+    "total": 29200
+   },
+   {
+    "outbound": {
+     "id": "eyJpZCI6IiIsInN1cHBsaWVyIjoiRmFsY29uIERpcmVjdCIsImNhcnJpZXIiOiJGYWxjb24gQWlyd2F5cyIsImZsaWdodCI6IkZBIDEzMSIsImJyYW5kIjoiRmxleGkiLCJmcm9tIjoiQk9NIiwidG8iOiJEWEIiLCJkYXRlIjoiMjAyNi0xMi0yMCIsImRlcGFydCI6IjE4OjUwIiwiYXJyaXZlIjoiMjE6NDEiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjoxMjk2MCwidGF4ZXMiOjIyMTAsInRvdGFsIjoxNTE3MCwiY3VycmVuY3kiOiJJTlIifQ.kIYxYktK3S607RPSRFNgic_Y",
+     "supplier": "Falcon Direct",
+     "carrier": "Falcon Airways",
+     "flight": "FA 131",
+     "brand": "Flexi",
+     "from": "BOM",
+     "to": "DXB",
+     "date": "2026-12-20",
+     "depart": "18:50",
+     "arrive": "21:41",
+     "durationMin": 171,
+     "base": 12960,
+     "taxes": 2210,
+     "total": 15170,
+     "currency": "INR"
+    },
+    "return": {
+     "id": "eyJpZCI6IiIsInN1cHBsaWVyIjoiRmFsY29uIERpcmVjdCIsImNhcnJpZXIiOiJGYWxjb24gQWlyd2F5cyIsImZsaWdodCI6IkZBIDg5NiIsImJyYW5kIjoiRmxleGkiLCJmcm9tIjoiRFhCIiwidG8iOiJCT00iLCJkYXRlIjoiMjAyNi0xMi0yNyIsImRlcGFydCI6IjA3OjM1IiwiYXJyaXZlIjoiMTA6MjYiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjoxNTAyMCwidGF4ZXMiOjI0NTAsInRvdGFsIjoxNzQ3MCwiY3VycmVuY3kiOiJJTlIifQ.ye4xsHHBWbJIr5lljefl8tEu",
+     "supplier": "Falcon Direct",
+     "carrier": "Falcon Airways",
+     "flight": "FA 896",
+     "brand": "Flexi",
+     "from": "DXB",
+     "to": "BOM",
+     "date": "2026-12-27",
+     "depart": "07:35",
+     "arrive": "10:26",
+     "durationMin": 171,
+     "base": 15020,
+     "taxes": 2450,
+     "total": 17470,
+     "currency": "INR"
+    },
+    "total": 32640
+   },
+   {
+    "outbound": {
+     "id": "eyJpZCI6IiIsInN1cHBsaWVyIjoiQWVyb0h1YiIsImNhcnJpZXIiOiJTYWZmcm9uIEFpciIsImZsaWdodCI6IlNGIDQ5NyIsImJyYW5kIjoiRmxleGkiLCJmcm9tIjoiQk9NIiwidG8iOiJEWEIiLCJkYXRlIjoiMjAyNi0xMi0yMCIsImRlcGFydCI6IjE2OjU1IiwiYXJyaXZlIjoiMTk6NDYiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjoxNDcyMCwidGF4ZXMiOjI0MjAsInRvdGFsIjoxNzE0MCwiY3VycmVuY3kiOiJJTlIifQ._T_7B_rBe_aCy4bjbALicRpG",
+     "supplier": "AeroHub",
+     "carrier": "Saffron Air",
+     "flight": "SF 497",
+     "brand": "Flexi",
+     "from": "BOM",
+     "to": "DXB",
+     "date": "2026-12-20",
+     "depart": "16:55",
+     "arrive": "19:46",
+     "durationMin": 171,
+     "base": 14720,
+     "taxes": 2420,
+     "total": 17140,
+     "currency": "INR"
+    },
+    "return": {
+     "id": "eyJpZCI6IiIsInN1cHBsaWVyIjoiQWVyb0h1YiIsImNhcnJpZXIiOiJTYWZmcm9uIEFpciIsImZsaWdodCI6IlNGIDM3MCIsImJyYW5kIjoiRmxleGkiLCJmcm9tIjoiRFhCIiwidG8iOiJCT00iLCJkYXRlIjoiMjAyNi0xMi0yNyIsImRlcGFydCI6IjA2OjUwIiwiYXJyaXZlIjoiMDk6NDEiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjoxNDQ1MCwidGF4ZXMiOjIzODAsInRvdGFsIjoxNjgzMCwiY3VycmVuY3kiOiJJTlIifQ.pCZ0JK1P33YgAby06ku1XqE9",
+     "supplier": "AeroHub",
+     "carrier": "Saffron Air",
+     "flight": "SF 370",
+     "brand": "Flexi",
+     "from": "DXB",
+     "to": "BOM",
+     "date": "2026-12-27",
+     "depart": "06:50",
+     "arrive": "09:41",
+     "durationMin": 171,
+     "base": 14450,
+     "taxes": 2380,
+     "total": 16830,
+     "currency": "INR"
+    },
+    "total": 33970
+   }
+  ],
+  "calls": [
+   {
+    "leg": "BOM→DXB",
+    "supplier": "AeroHub",
+    "ms": 212,
+    "offers": 4
+   },
+   {
+    "leg": "BOM→DXB",
+    "supplier": "Falcon Direct",
+    "ms": 294,
+    "offers": 2
+   },
+   {
+    "leg": "DXB→BOM",
+    "supplier": "AeroHub",
+    "ms": 245,
+    "offers": 4
+   },
+   {
+    "leg": "DXB→BOM",
+    "supplier": "Falcon Direct",
+    "ms": 291,
+    "offers": 2
+   }
+  ],
+  "wallMs": 294,
+  "sequentialMs": 1042,
+  "matched": 6
+ },
+ "revalidations": {
+  "eyJpZCI6IiIsInN1cHBsaWVyIjoiQWVyb0h1YiIsImNhcnJpZXIiOiJNb25zb29uIEpldCIsImZsaWdodCI6Ik1KIDU1NiIsImJyYW5kIjoiU2F2ZXIiLCJmcm9tIjoiQk9NIiwidG8iOiJEWEIiLCJkYXRlIjoiMjAyNi0xMi0yMCIsImRlcGFydCI6IjIwOjM1IiwiYXJyaXZlIjoiMjM6MjYiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjo5MDUwLCJ0YXhlcyI6MTc0MCwidG90YWwiOjEwNzkwLCJjdXJyZW5jeSI6IklOUiJ9.N0vQkdlrIYLDhBz8ITXhzqit": {
+   "status": "price_changed",
+   "path": "native",
+   "supplier": "AeroHub",
+   "previous": 10790,
+   "current": 11220,
+   "message": "The fare changed since search. Nothing is booked at the old price: the traveller has to accept the new total first."
+  },
+  "eyJpZCI6IiIsInN1cHBsaWVyIjoiQWVyb0h1YiIsImNhcnJpZXIiOiJNb25zb29uIEpldCIsImZsaWdodCI6Ik1KIDEzNyIsImJyYW5kIjoiU2F2ZXIiLCJmcm9tIjoiRFhCIiwidG8iOiJCT00iLCJkYXRlIjoiMjAyNi0xMi0yNyIsImRlcGFydCI6IjEwOjU1IiwiYXJyaXZlIjoiMTM6NDYiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjo5NjMwLCJ0YXhlcyI6MTgxMCwidG90YWwiOjExNDQwLCJjdXJyZW5jeSI6IklOUiJ9.K3-5VbZu7zwa2nAnyEFuOVw9": {
+   "status": "confirmed",
+   "path": "native",
+   "supplier": "AeroHub",
+   "previous": 11440,
+   "current": 11440,
+   "message": "The supplier confirmed the price. It's safe to create the booking."
+  },
+  "eyJpZCI6IiIsInN1cHBsaWVyIjoiRmFsY29uIERpcmVjdCIsImNhcnJpZXIiOiJGYWxjb24gQWlyd2F5cyIsImZsaWdodCI6IkZBIDEzMSIsImJyYW5kIjoiU2F2ZXIiLCJmcm9tIjoiQk9NIiwidG8iOiJEWEIiLCJkYXRlIjoiMjAyNi0xMi0yMCIsImRlcGFydCI6IjE4OjUwIiwiYXJyaXZlIjoiMjE6NDEiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjo5OTEwLCJ0YXhlcyI6MTg0MCwidG90YWwiOjExNzUwLCJjdXJyZW5jeSI6IklOUiJ9.AUCNADwFW97EkANYeFg_Kwpt": {
+   "status": "confirmed",
+   "path": "cached",
+   "supplier": "Falcon Direct",
+   "previous": 11750,
+   "current": 11750,
+   "message": "This supplier has no revalidation API, so the price was checked against the cached search snapshot."
+  },
+  "eyJpZCI6IiIsInN1cHBsaWVyIjoiRmFsY29uIERpcmVjdCIsImNhcnJpZXIiOiJGYWxjb24gQWlyd2F5cyIsImZsaWdodCI6IkZBIDg5NiIsImJyYW5kIjoiU2F2ZXIiLCJmcm9tIjoiRFhCIiwidG8iOiJCT00iLCJkYXRlIjoiMjAyNi0xMi0yNyIsImRlcGFydCI6IjA3OjM1IiwiYXJyaXZlIjoiMTA6MjYiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjoxMTQ5MCwidGF4ZXMiOjIwMzAsInRvdGFsIjoxMzUyMCwiY3VycmVuY3kiOiJJTlIifQ.pSOb3HjTirVbiy3agKSSVpIL": {
+   "status": "confirmed",
+   "path": "cached",
+   "supplier": "Falcon Direct",
+   "previous": 13520,
+   "current": 13520,
+   "message": "This supplier has no revalidation API, so the price was checked against the cached search snapshot."
+  },
+  "eyJpZCI6IiIsInN1cHBsaWVyIjoiQWVyb0h1YiIsImNhcnJpZXIiOiJTYWZmcm9uIEFpciIsImZsaWdodCI6IlNGIDQ5NyIsImJyYW5kIjoiU2F2ZXIiLCJmcm9tIjoiQk9NIiwidG8iOiJEWEIiLCJkYXRlIjoiMjAyNi0xMi0yMCIsImRlcGFydCI6IjE2OjU1IiwiYXJyaXZlIjoiMTk6NDYiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjoxMTE1MCwidGF4ZXMiOjE5OTAsInRvdGFsIjoxMzE0MCwiY3VycmVuY3kiOiJJTlIifQ.mgHx8SWbZEEeDF7dPieYhAIF": {
+   "status": "confirmed",
+   "path": "native",
+   "supplier": "AeroHub",
+   "previous": 13140,
+   "current": 13140,
+   "message": "The supplier confirmed the price. It's safe to create the booking."
+  },
+  "eyJpZCI6IiIsInN1cHBsaWVyIjoiQWVyb0h1YiIsImNhcnJpZXIiOiJTYWZmcm9uIEFpciIsImZsaWdodCI6IlNGIDM3MCIsImJyYW5kIjoiU2F2ZXIiLCJmcm9tIjoiRFhCIiwidG8iOiJCT00iLCJkYXRlIjoiMjAyNi0xMi0yNyIsImRlcGFydCI6IjA2OjUwIiwiYXJyaXZlIjoiMDk6NDEiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjoxMDk1MCwidGF4ZXMiOjE5NjAsInRvdGFsIjoxMjkxMCwiY3VycmVuY3kiOiJJTlIifQ.SCkAjfKRndAVXUozIJSmFEIP": {
+   "status": "confirmed",
+   "path": "native",
+   "supplier": "AeroHub",
+   "previous": 12910,
+   "current": 12910,
+   "message": "The supplier confirmed the price. It's safe to create the booking."
+  },
+  "eyJpZCI6IiIsInN1cHBsaWVyIjoiQWVyb0h1YiIsImNhcnJpZXIiOiJNb25zb29uIEpldCIsImZsaWdodCI6Ik1KIDU1NiIsImJyYW5kIjoiRmxleGkiLCJmcm9tIjoiQk9NIiwidG8iOiJEWEIiLCJkYXRlIjoiMjAyNi0xMi0yMCIsImRlcGFydCI6IjIwOjM1IiwiYXJyaXZlIjoiMjM6MjYiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjoxMjA3MCwidGF4ZXMiOjIxMDAsInRvdGFsIjoxNDE3MCwiY3VycmVuY3kiOiJJTlIifQ.qdGT8AuSvizRksnQkalNB--p": {
+   "status": "price_changed",
+   "path": "native",
+   "supplier": "AeroHub",
+   "previous": 14170,
+   "current": 14740,
+   "message": "The fare changed since search. Nothing is booked at the old price: the traveller has to accept the new total first."
+  },
+  "eyJpZCI6IiIsInN1cHBsaWVyIjoiQWVyb0h1YiIsImNhcnJpZXIiOiJNb25zb29uIEpldCIsImZsaWdodCI6Ik1KIDEzNyIsImJyYW5kIjoiRmxleGkiLCJmcm9tIjoiRFhCIiwidG8iOiJCT00iLCJkYXRlIjoiMjAyNi0xMi0yNyIsImRlcGFydCI6IjEwOjU1IiwiYXJyaXZlIjoiMTM6NDYiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjoxMjg0MCwidGF4ZXMiOjIxOTAsInRvdGFsIjoxNTAzMCwiY3VycmVuY3kiOiJJTlIifQ.IGjk1-vX2UW-L7tGUCkLUuXt": {
+   "status": "price_changed",
+   "path": "native",
+   "supplier": "AeroHub",
+   "previous": 15030,
+   "current": 15630,
+   "message": "The fare changed since search. Nothing is booked at the old price: the traveller has to accept the new total first."
+  },
+  "eyJpZCI6IiIsInN1cHBsaWVyIjoiRmFsY29uIERpcmVjdCIsImNhcnJpZXIiOiJGYWxjb24gQWlyd2F5cyIsImZsaWdodCI6IkZBIDEzMSIsImJyYW5kIjoiRmxleGkiLCJmcm9tIjoiQk9NIiwidG8iOiJEWEIiLCJkYXRlIjoiMjAyNi0xMi0yMCIsImRlcGFydCI6IjE4OjUwIiwiYXJyaXZlIjoiMjE6NDEiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjoxMjk2MCwidGF4ZXMiOjIyMTAsInRvdGFsIjoxNTE3MCwiY3VycmVuY3kiOiJJTlIifQ.kIYxYktK3S607RPSRFNgic_Y": {
+   "status": "confirmed",
+   "path": "cached",
+   "supplier": "Falcon Direct",
+   "previous": 15170,
+   "current": 15170,
+   "message": "This supplier has no revalidation API, so the price was checked against the cached search snapshot."
+  },
+  "eyJpZCI6IiIsInN1cHBsaWVyIjoiRmFsY29uIERpcmVjdCIsImNhcnJpZXIiOiJGYWxjb24gQWlyd2F5cyIsImZsaWdodCI6IkZBIDg5NiIsImJyYW5kIjoiRmxleGkiLCJmcm9tIjoiRFhCIiwidG8iOiJCT00iLCJkYXRlIjoiMjAyNi0xMi0yNyIsImRlcGFydCI6IjA3OjM1IiwiYXJyaXZlIjoiMTA6MjYiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjoxNTAyMCwidGF4ZXMiOjI0NTAsInRvdGFsIjoxNzQ3MCwiY3VycmVuY3kiOiJJTlIifQ.ye4xsHHBWbJIr5lljefl8tEu": {
+   "status": "confirmed",
+   "path": "cached",
+   "supplier": "Falcon Direct",
+   "previous": 17470,
+   "current": 17470,
+   "message": "This supplier has no revalidation API, so the price was checked against the cached search snapshot."
+  },
+  "eyJpZCI6IiIsInN1cHBsaWVyIjoiQWVyb0h1YiIsImNhcnJpZXIiOiJTYWZmcm9uIEFpciIsImZsaWdodCI6IlNGIDQ5NyIsImJyYW5kIjoiRmxleGkiLCJmcm9tIjoiQk9NIiwidG8iOiJEWEIiLCJkYXRlIjoiMjAyNi0xMi0yMCIsImRlcGFydCI6IjE2OjU1IiwiYXJyaXZlIjoiMTk6NDYiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjoxNDcyMCwidGF4ZXMiOjI0MjAsInRvdGFsIjoxNzE0MCwiY3VycmVuY3kiOiJJTlIifQ._T_7B_rBe_aCy4bjbALicRpG": {
+   "status": "confirmed",
+   "path": "native",
+   "supplier": "AeroHub",
+   "previous": 17140,
+   "current": 17140,
+   "message": "The supplier confirmed the price. It's safe to create the booking."
+  },
+  "eyJpZCI6IiIsInN1cHBsaWVyIjoiQWVyb0h1YiIsImNhcnJpZXIiOiJTYWZmcm9uIEFpciIsImZsaWdodCI6IlNGIDM3MCIsImJyYW5kIjoiRmxleGkiLCJmcm9tIjoiRFhCIiwidG8iOiJCT00iLCJkYXRlIjoiMjAyNi0xMi0yNyIsImRlcGFydCI6IjA2OjUwIiwiYXJyaXZlIjoiMDk6NDEiLCJkdXJhdGlvbk1pbiI6MTcxLCJiYXNlIjoxNDQ1MCwidGF4ZXMiOjIzODAsInRvdGFsIjoxNjgzMCwiY3VycmVuY3kiOiJJTlIifQ.pCZ0JK1P33YgAby06ku1XqE9": {
+   "status": "price_changed",
+   "path": "native",
+   "supplier": "AeroHub",
+   "previous": 16830,
+   "current": 17500,
+   "message": "The fare changed since search. Nothing is booked at the old price: the traveller has to accept the new total first."
+  }
+ }
+}

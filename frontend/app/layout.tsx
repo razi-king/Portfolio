@@ -12,12 +12,12 @@ const SITE = 'https://razi-king.github.io/Portfolio/'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
-  title: 'Razi King · Backend Engineer (Go)',
+  title: 'Razi Ahmed (Razi King) · Backend Engineer, Go · Travel Tech',
   description:
-    'Razi Ahmed (Razi King), backend engineer in Go. Airline and supplier API integrations, booking engines, PostgreSQL, Redis, RabbitMQ.',
+    'Razi Ahmed, backend engineer in Go at Infohybrid. Integrated TripJack and Akasa Air into a live flight booking engine, supports FlyArystan, SalamAir and ASL Airlines, and builds with PostgreSQL, Redis and goroutines. Open to Go backend roles.',
   openGraph: {
-    title: 'Razi King, Backend Engineer (Go)',
-    description: 'I connect airlines to booking engines in Go. See my production work and projects.',
+    title: 'Razi Ahmed, Backend Engineer (Go)',
+    description: 'I build the Go services that sell airline seats: supplier integrations, booking flows and pricing logic in production. Open to Go backend roles.',
     url: SITE,
     type: 'website',
   },

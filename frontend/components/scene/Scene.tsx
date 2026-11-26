@@ -7,6 +7,7 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import * as THREE from 'three'
 import { Globe } from './Globe'
 import { Crown } from './Crown'
+import GlobeLabels from './GlobeLabels'
 
 /** Pointer parallax, scroll-driven camera pull-back, and responsive placement. */
 function Rig({ children }: { children: React.ReactNode }) {
@@ -110,6 +111,7 @@ export default function Scene() {
         </EffectComposer>
         <AdaptiveDpr pixelated={false} />
       </Canvas>
+      <GlobeLabels />
     </div>
   )
 }

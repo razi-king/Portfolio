@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react'
 
 const LINKS = [
-  { id: 'routes', label: 'Work', n: '01' },
-  { id: 'hangar', label: 'Projects', n: '02' },
-  { id: 'journey', label: 'Journey', n: '03' },
+  { id: 'impact', label: 'Why me', n: '01' },
+  { id: 'routes', label: 'Work', n: '02' },
+  { id: 'demo', label: 'Live demo', n: '03' },
+  { id: 'hangar', label: 'Projects', n: '04' },
+  { id: 'journey', label: 'Journey', n: '05' },
 ]
 
 export default function Nav() {
@@ -64,7 +66,7 @@ export default function Nav() {
             </a>
           ))}
           <a href="#contact" className="nav-cta" onClick={close}>
-            <span className="nav-n">04</span>
+            <span className="nav-n">06</span>
             Contact
           </a>
         </nav>

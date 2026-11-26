@@ -47,8 +47,8 @@ export default function Hangar() {
 
   return (
     <section className="section" id="hangar" aria-labelledby="hangar-title">
-      <SectionHead n="02" label="Hangar" title="The hangar" id="hangar-title">
-        Everything I&apos;ve built on my own time, with live demos where they&apos;re deployed.
+      <SectionHead n="04" label="Hangar" title="Side projects" id="hangar-title">
+        What I build on my own time, from event-driven Go services to Spring Boot APIs and React frontends. Live demos where they&apos;re deployed.
       </SectionHead>
       <div className="filters" role="group" aria-label="Filter projects" data-reveal>
         {FILTERS.map((f) => (

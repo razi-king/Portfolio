@@ -1,21 +1,11 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useFrame } from '@react-three/fiber'
-import { Html } from '@react-three/drei'
+import { useMemo, useRef } from 'react'
+import { useFrame, type ThreeEvent } from '@react-three/fiber'
 import * as THREE from 'three'
-import {
-  AMETHYST,
-  CYAN,
-  DESTINATIONS,
-  FLIGHT_EVENT,
-  GOLD,
-  HUB,
-  R,
-  legState,
-  toVec,
-  type FlightState,
-} from './geo'
+import { AMETHYST, CYAN, DESTINATIONS, GOLD, HUB, PLANES, R, ROUTE_KM, flightStore, legState, toVec, type Phase } from './geo'
+import { hoverRoute, selectRoute, useFlights } from '@/lib/flights'
+import { labelRefs } from './labels'
 
 /* ------------------------------------------------------------------ surface */
 
@@ -137,18 +127,19 @@ const arcVertex = /* glsl */ `
   void main() { vT = aT; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
 `
 const arcFragment = /* glsl */ `
-  uniform float uTime; uniform float uOffset; uniform float uProgress; uniform vec3 uColor; uniform vec3 uHot;
+  uniform float uTime; uniform float uOffset; uniform float uProgress; uniform float uDim; uniform float uSel;
+  uniform vec3 uColor; uniform vec3 uHot;
   varying float vT;
   void main() {
     if (uProgress >= 0.0) {
-      // active leg: a hot trail behind the plane, marching dashes ahead of it
+      // a leg in use: a hot trail behind the plane, marching dashes ahead of it
       float d = uProgress - vT;
       if (d >= 0.0) {
         float trail = 0.35 + 0.65 * smoothstep(0.35, 0.0, d);
-        gl_FragColor = vec4(mix(uColor, uHot, smoothstep(0.12, 0.0, d)), trail);
+        gl_FragColor = vec4(mix(uColor, uHot, smoothstep(0.12, 0.0, d)), trail * uDim);
       } else {
         float dash = step(0.5, fract(vT * 46.0 - uTime * 1.6));
-        gl_FragColor = vec4(uHot, 0.32 * dash);
+        gl_FragColor = vec4(uHot, (0.32 + uSel * 0.4) * dash * uDim);
       }
       return;
     }
@@ -156,43 +147,67 @@ const arcFragment = /* glsl */ `
     float head = fract(uTime * 0.12 + uOffset);
     float d = head - vT; if (d < 0.0) d += 1.0;
     float trail = smoothstep(0.3, 0.0, d);
-    gl_FragColor = vec4(uColor, 0.07 + trail * 0.35);
+    gl_FragColor = vec4(uColor, (0.07 + trail * 0.35) * uDim);
   }
 `
 
 const BOARD = 0.9 // seconds at the gate
 const HOLD = 2.6 // seconds the arrival popup stays up
 const flyTime = (km: number) => 2.6 + km / 2400
+/** Planes 2 and 3 wait this long before their first departure, so take-offs are staggered. */
+const STAGGER = [0, 2.4, 4.8]
+const FIRST_LEGS = [0, 3, 7]
 
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
 
 /** Facing angle (y rotation) that brings a longitude to the front of the globe. */
 const faceLon = (lon: number) => -THREE.MathUtils.degToRad(lon + 90)
 
-function broadcast(s: FlightState) {
-  ;(window as unknown as { __rkFlight?: FlightState }).__rkFlight = s
-  window.dispatchEvent(new CustomEvent(FLIGHT_EVENT, { detail: s }))
+interface Sched {
+  leg: number
+  t: number
+  phase: Phase
 }
 
-/** A small glowing airliner, modelled along +Z with +Y up. */
-function Plane() {
+/** The next leg after `from` that no other plane (or the selection) is using. */
+function nextLeg(from: number, busy: Set<number>) {
+  for (let k = 1; k <= DESTINATIONS.length; k++) {
+    const c = (from + k) % DESTINATIONS.length
+    if (!busy.has(c)) return c
+  }
+  return (from + 1) % DESTINATIONS.length
+}
+
+function progressOf(s: Sched) {
+  if (s.phase === 'boarding') return 0
+  if (s.phase === 'arrived') return 1
+  return ease(Math.min(1, (s.t - BOARD) / flyTime(ROUTE_KM[s.leg])))
+}
+
+function setCursor(pointer: boolean) {
+  document.body.style.cursor = pointer ? 'pointer' : ''
+}
+
+/** A small glowing airliner, modelled along +Z with +Y up. The lead plane glows cyan, the others violet. */
+function Plane({ lead }: { lead: boolean }) {
+  const glow = lead ? CYAN : AMETHYST
   return (
     <group scale={0.07}>
       <mesh rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.13, 0.17, 1.6, 12]} />
-        <meshStandardMaterial color="#ffffff" emissive={CYAN} emissiveIntensity={0.9} metalness={0.4} roughness={0.3} />
+        <meshStandardMaterial color="#ffffff" emissive={glow} emissiveIntensity={0.9} metalness={0.4} roughness={0.3} />
       </mesh>
       <mesh position={[0, 0, 0.95]} rotation={[Math.PI / 2, 0, 0]}>
         <coneGeometry args={[0.13, 0.32, 12]} />
-        <meshStandardMaterial color="#ffffff" emissive={CYAN} emissiveIntensity={0.9} />
+        <meshStandardMaterial color="#ffffff" emissive={glow} emissiveIntensity={0.9} />
       </mesh>
       <mesh position={[0, -0.02, 0.05]} rotation={[0, 0, 0]}>
         <boxGeometry args={[2, 0.04, 0.42]} />
-        <meshStandardMaterial color="#dff9ff" emissive={CYAN} emissiveIntensity={0.7} />
+        <meshStandardMaterial color="#dff9ff" emissive={glow} emissiveIntensity={0.7} />
       </mesh>
       <mesh position={[0, 0, -0.68]}>
         <boxGeometry args={[0.75, 0.03, 0.22]} />
-        <meshStandardMaterial color="#dff9ff" emissive={CYAN} emissiveIntensity={0.7} />
+        <meshStandardMaterial color="#dff9ff" emissive={glow} emissiveIntensity={0.7} />
       </mesh>
       <mesh position={[0, 0.2, -0.7]}>
         <boxGeometry args={[0.03, 0.4, 0.26]} />
@@ -208,67 +223,25 @@ function Plane() {
   )
 }
 
-/* ------------------------------------------------------------------ popups */
-
-function HubTag({ s }: { s: FlightState }) {
-  const status = s.phase === 'boarding' ? `Boarding ${s.flight}` : s.phase === 'airborne' ? `${s.flight} departed` : 'Gate open'
-  return (
-    <div className="geo-tag geo-hub">
-      <span className="geo-dot" />
-      <span className="geo-code">{HUB.code}</span>
-      <span className="geo-name">{HUB.name}</span>
-      <span className="geo-sub">{status}</span>
-    </div>
-  )
-}
-
-function ArrivalCard({ s }: { s: FlightState }) {
-  if (s.phase !== 'arrived') {
-    return (
-      <div className="geo-tag geo-next" key={`n${s.leg}`}>
-        <span className="geo-dot" />
-        <span className="geo-code">{s.to.code}</span>
-        <span className="geo-sub">{s.phase === 'boarding' ? 'Next stop' : 'Inbound'}</span>
-      </div>
-    )
-  }
-  return (
-    <div className="geo-card" key={`a${s.leg}`}>
-      <div className="geo-card-top">
-        <span className="geo-live" /> Arrived · {s.flight}
-      </div>
-      <div className="geo-card-city">{s.to.name}</div>
-      <div className="geo-card-country">
-        {s.to.country} · {s.to.code}
-      </div>
-      <div className="geo-card-meta">
-        <span>{s.from.code} → {s.to.code}</span>
-        <span>{s.km.toLocaleString('en-IN')} km</span>
-        <span>{s.time}</span>
-      </div>
-    </div>
-  )
-}
-
 /* ------------------------------------------------------------------ globe */
 
 export function Globe({ speed }: { speed: number }) {
   const spin = useRef<THREE.Group>(null)
-  const plane = useRef<THREE.Group>(null)
-  const hubAnchor = useRef<THREE.Group>(null)
-  const destAnchor = useRef<THREE.Group>(null)
-  const hubEl = useRef<HTMLDivElement>(null)
-  const destEl = useRef<HTMLDivElement>(null)
+  const planeRefs = useRef<(THREE.Group | null)[]>([])
+  const pulse = useRef<THREE.Mesh>(null)
+  const { planes, selected, hover } = useFlights()
 
-  const [state, setState] = useState<FlightState>(() => legState(0, 'boarding'))
-  const clockRef = useRef({ leg: 0, t: 0, phase: 'boarding' as FlightState['phase'] })
+  const scheds = useRef<Sched[]>(FIRST_LEGS.slice(0, PLANES).map((leg, i) => ({ leg, t: -STAGGER[i], phase: 'boarding' as Phase })))
+  const lastSel = useRef<string | null>(null)
 
-  const { curves, lines, materials, hub } = useMemo(() => {
+  const { curves, lines, materials, hub, ends, anchors, hubAnchor } = useMemo(() => {
     const from = toVec(HUB.lat, HUB.lon)
     const materials: THREE.ShaderMaterial[] = []
     const curves: THREE.QuadraticBezierCurve3[] = []
+    const ends: THREE.Vector3[] = []
     const lines = DESTINATIONS.map((d, i) => {
       const to = toVec(d.lat, d.lon)
+      ends.push(to)
       const dist = from.distanceTo(to)
       const mid = from.clone().add(to).multiplyScalar(0.5).normalize().multiplyScalar(R + 0.18 + dist * 0.32)
       const curve = new THREE.QuadraticBezierCurve3(from, mid, to)
@@ -284,6 +257,8 @@ export function Globe({ speed }: { speed: number }) {
           uTime: { value: 0 },
           uOffset: { value: i / DESTINATIONS.length },
           uProgress: { value: -1 },
+          uDim: { value: 1 },
+          uSel: { value: 0 },
           uColor: { value: GOLD },
           uHot: { value: CYAN },
         },
@@ -291,14 +266,12 @@ export function Globe({ speed }: { speed: number }) {
         fragmentShader: arcFragment,
       })
       materials.push(m)
-      return { line: new THREE.Line(g, m), end: to }
+      return new THREE.Line(g, m)
     })
-    return { curves, lines, materials, hub: from }
+    const anchors = DESTINATIONS.map((d) => toVec(d.lat, d.lon, R * 1.01))
+    return { curves, lines, materials, hub: from, ends, anchors, hubAnchor: from.clone().multiplyScalar(1.01) }
   }, [])
 
-  useEffect(() => broadcast(legState(0, 'boarding')), [])
-
-  const pulse = useRef<THREE.Mesh>(null)
   const pulseTarget = useMemo(() => hub.clone().multiplyScalar(2), [hub])
   const scratch = useMemo(
     () => ({
@@ -309,110 +282,152 @@ export function Globe({ speed }: { speed: number }) {
       a: new THREE.Vector3(),
       c: new THREE.Vector3(),
       v: new THREE.Vector3(),
+      w: new THREE.Vector3(),
     }),
     [],
   )
-
   const initialYaw = useMemo(() => faceLon((HUB.lon + DESTINATIONS[0].lon) / 2), [])
 
   useFrame(({ clock, camera, size }, dtRaw) => {
     const dt = Math.min(dtRaw, 0.1)
     const t = clock.getElapsedTime()
-    const c = clockRef.current
-    const dest = DESTINATIONS[c.leg]
-    const km = legState(c.leg, 'airborne').km
-    const fly = flyTime(km)
+    const all = scheds.current
+    const store = flightStore.get()
+    const selIdx = store.selected ? DESTINATIONS.findIndex((d) => d.code === store.selected) : -1
+    let changed = false
 
-    // ---- leg state machine
-    c.t += dt
-    let next: FlightState['phase'] = c.phase
-    if (c.phase === 'boarding' && c.t > BOARD) next = 'airborne'
-    else if (c.phase === 'airborne' && c.t > BOARD + fly) next = 'arrived'
-    else if (c.phase === 'arrived' && c.t > BOARD + fly + HOLD) {
-      materials[c.leg].uniforms.uProgress.value = -1
-      c.leg = (c.leg + 1) % DESTINATIONS.length
-      c.t = 0
-      next = 'boarding'
-    }
-    if (next !== c.phase) {
-      c.phase = next
-      const s = legState(c.leg, next)
-      setState(s)
-      broadcast(s)
+    // ---- a new selection sends the lead plane straight onto that route
+    if (store.selected !== lastSel.current) {
+      lastSel.current = store.selected
+      if (selIdx >= 0) {
+        all[0] = { leg: selIdx, t: 0, phase: 'boarding' }
+        for (let i = 1; i < all.length; i++) {
+          if (all[i].leg !== selIdx) continue
+          all[i] = { leg: nextLeg(selIdx, new Set(all.map((s) => s.leg))), t: 0, phase: 'boarding' }
+        }
+        changed = true
+      }
     }
 
-    // ---- plane along the active arc
-    const progress = c.phase === 'boarding' ? 0 : c.phase === 'arrived' ? 1 : ease(Math.min(1, (c.t - BOARD) / fly))
+    // ---- each plane: boarding → airborne → arrived → next leg
+    for (let i = 0; i < all.length; i++) {
+      const s = all[i]
+      const fly = flyTime(ROUTE_KM[s.leg])
+      s.t += dt
+      let next = s.phase
+      if (s.phase === 'boarding' && s.t > BOARD) next = 'airborne'
+      else if (s.phase === 'airborne' && s.t > BOARD + fly) next = 'arrived'
+      else if (s.phase === 'arrived' && s.t > BOARD + fly + HOLD) {
+        const busy = new Set(all.filter((_, k) => k !== i).map((o) => o.leg))
+        if (selIdx >= 0) busy.add(selIdx)
+        s.leg = i === 0 && selIdx >= 0 ? selIdx : nextLeg(s.leg, busy)
+        s.t = 0
+        next = 'boarding'
+      }
+      if (next !== s.phase) {
+        s.phase = next
+        changed = true
+      }
+    }
+    if (changed) flightStore.set({ planes: all.map((s, i) => legState(s.leg, s.phase, i)) })
+
+    // ---- route shaders: lit trails for legs in use, everything else dims while a route is selected
     for (let i = 0; i < materials.length; i++) {
-      materials[i].uniforms.uTime.value = speed ? t : 2
-      if (i === c.leg) materials[i].uniforms.uProgress.value = progress
+      const u = materials[i].uniforms
+      u.uTime.value = speed ? t : 2
+      u.uProgress.value = -1
+      u.uSel.value = i === selIdx ? 1 : 0
+      const dim = selIdx >= 0 && i !== selIdx ? 0.25 : 1
+      u.uDim.value += (dim - u.uDim.value) * Math.min(1, dt * 4)
     }
-    const p = plane.current
-    if (p) {
-      const curve = curves[c.leg]
+    for (const s of all) materials[s.leg].uniforms.uProgress.value = progressOf(s)
+
+    // ---- planes ride their arcs, nose along the path and belly to the planet
+    const { x, y, z, basis } = scratch
+    all.forEach((s, i) => {
+      const p = planeRefs.current[i]
+      if (!p) return
+      const progress = progressOf(s)
+      const curve = curves[s.leg]
       const k = Math.min(0.999, Math.max(0.001, progress))
       curve.getPointAt(k, p.position)
-      const { x, y, z, basis } = scratch
       curve.getTangentAt(k, z).normalize()
       y.copy(p.position).normalize()
       y.addScaledVector(z, -y.dot(z)).normalize()
       x.crossVectors(y, z)
       basis.makeBasis(x, y, z)
       p.quaternion.setFromRotationMatrix(basis)
-      // a little bank as the plane climbs out and descends
       p.rotateZ(Math.sin(progress * Math.PI * 2) * 0.18)
-      p.visible = speed > 0 && c.phase === 'airborne'
-      const grow = Math.min(1, (c.t - BOARD) * 3, (BOARD + fly - c.t) * 3)
-      p.scale.setScalar(Math.max(0.01, grow))
-    }
+      const fly = flyTime(ROUTE_KM[s.leg])
+      p.visible = speed > 0 && s.phase === 'airborne'
+      const grow = Math.min(1, (s.t - BOARD) * 3, (BOARD + fly - s.t) * 3)
+      const faded = selIdx >= 0 && i > 0 ? 0.75 : 1
+      p.scale.setScalar(Math.max(0.01, grow) * faded)
+    })
 
-    // ---- turn the globe so the active route faces the viewer
+    // ---- turn the globe so the selected (or lead) route faces the viewer
     const g = spin.current
     if (g) {
-      const target = faceLon((HUB.lon + dest.lon) / 2)
+      const focus = DESTINATIONS[selIdx >= 0 ? selIdx : all[0].leg]
+      const target = faceLon((HUB.lon + focus.lon) / 2)
       let d = target - g.rotation.y
       d = Math.atan2(Math.sin(d), Math.cos(d))
-      g.rotation.y += speed ? d * Math.min(1, dt * 0.9) : d
+      g.rotation.y += speed ? d * Math.min(1, dt * (selIdx >= 0 ? 2 : 0.9)) : d
     }
 
-    // ---- hub pulse
     if (pulse.current) {
       const q = (t * 0.8) % 1
       pulse.current.scale.setScalar(1 + q * 2.4)
       ;(pulse.current.material as THREE.MeshBasicMaterial).opacity = speed ? 1 - q : 0.6
     }
 
-    // ---- hide popups on the far side, and flip them away from screen edges
-    const { a, c: centre, v } = scratch
-    spin.current?.getWorldPosition(centre)
-    // returns the label's screen x so the two labels can be pushed to opposite sides
-    const place = (anchor: THREE.Group | null, el: HTMLDivElement | null) => {
-      if (!anchor || !el) return 0
-      anchor.getWorldPosition(a)
-      const facing = v.copy(a).sub(centre).normalize().dot(scratch.x.copy(camera.position).sub(a).normalize())
+    // ---- pin the DOM popups to their cities; hide them on the far side
+    if (!g) return
+    const { a, c, v, w } = scratch
+    g.getWorldPosition(c)
+    const place = (local: THREE.Vector3, el: HTMLDivElement | null) => {
+      if (!el) return 0
+      g.localToWorld(a.copy(local))
+      const facing = v.copy(a).sub(c).normalize().dot(w.copy(camera.position).sub(a).normalize())
       const o = THREE.MathUtils.smoothstep(facing, 0.02, 0.3)
+      v.copy(a).project(camera)
+      const px = ((v.x + 1) / 2) * size.width
+      const py = ((1 - v.y) / 2) * size.height
+      el.style.transform = `translate3d(${px.toFixed(1)}px, ${py.toFixed(1)}px, 0)`
       el.style.opacity = o.toFixed(3)
       el.style.visibility = o < 0.01 ? 'hidden' : 'visible'
-      const ndc = v.copy(a).project(camera)
-      return ((ndc.x + 1) / 2) * size.width
+      return px
     }
-    const hx = place(hubAnchor.current, hubEl.current)
-    const dx = place(destAnchor.current, destEl.current)
-    const room = size.width < 640 ? 190 : 230
-    const side = (x: number, want: 'left' | 'right') =>
-      want === 'right' && x > size.width - room ? 'left' : want === 'left' && x < room ? 'right' : want
-    const destSide = side(dx, dx < hx ? 'left' : 'right')
-    const hubSide = side(hx, destSide === 'left' ? 'right' : 'left')
-    if (destEl.current) destEl.current.dataset.side = destSide
-    if (hubEl.current) hubEl.current.dataset.side = hubSide
+    const room = size.width < 640 ? 190 : 240
+    const side = (px: number, want: 'left' | 'right') =>
+      want === 'right' && px > size.width - room ? 'left' : want === 'left' && px < room ? 'right' : want
+
+    const hx = place(hubAnchor, labelRefs.hub)
+    let leadSide: 'left' | 'right' = 'right'
+    for (let i = 0; i < all.length; i++) {
+      const el = labelRefs.dest[i]
+      const px = place(anchors[all[i].leg], el)
+      const sd = side(px, px < hx ? 'left' : 'right')
+      if (i === 0) leadSide = sd
+      if (el) el.dataset.side = sd
+    }
+    if (labelRefs.hub) labelRefs.hub.dataset.side = side(hx, leadSide === 'left' ? 'right' : 'left')
+    const hv = store.hover ? DESTINATIONS.findIndex((d) => d.code === store.hover) : -1
+    if (hv >= 0 && labelRefs.hover) {
+      const px = place(anchors[hv], labelRefs.hover)
+      labelRefs.hover.dataset.side = side(px, px < hx ? 'left' : 'right')
+    }
   })
 
-  const destPos = useMemo(() => toVec(state.to.lat, state.to.lon, R * 1.01), [state.to])
+  // The planet body swallows pointer events so cities on the far side can't be picked through it.
+  const block = (e: ThreeEvent<PointerEvent | MouseEvent>) => e.stopPropagation()
+  const activeLegs = new Set(planes.map((p) => p.leg))
+  const selIdx = selected ? DESTINATIONS.findIndex((d) => d.code === selected) : -1
 
   return (
     <group>
       <group ref={spin} rotation={[0.3, initialYaw, 0]}>
-        <mesh>
+        <mesh onClick={block} onPointerOver={block} onPointerMove={block}>
           <sphereGeometry args={[R * 0.985, 64, 64]} />
           <meshBasicMaterial color="#070a22" transparent opacity={0.9} />
         </mesh>
@@ -420,15 +435,39 @@ export function Globe({ speed }: { speed: number }) {
         <LatitudeRings />
         <Scanner speed={speed} />
 
-        {lines.map(({ line, end }, i) => (
-          <group key={i}>
-            <primitive object={line} />
-            <mesh position={end}>
-              <sphereGeometry args={[i === state.leg ? 0.028 : 0.016, 12, 12]} />
-              <meshBasicMaterial color={i === state.leg ? CYAN : GOLD} />
-            </mesh>
-          </group>
-        ))}
+        {lines.map((line, i) => {
+          const on = i === selIdx || activeLegs.has(i)
+          const hot = i === selIdx || hover === DESTINATIONS[i].code
+          return (
+            <group key={i}>
+              <primitive object={line} />
+              <mesh position={ends[i]}>
+                <sphereGeometry args={[hot ? 0.034 : on ? 0.026 : 0.016, 12, 12]} />
+                <meshBasicMaterial color={hot ? '#ffffff' : on ? CYAN : GOLD} />
+              </mesh>
+              {/* invisible, finger-sized hit target */}
+              <mesh
+                position={ends[i]}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  selectRoute(DESTINATIONS[i].code)
+                }}
+                onPointerOver={(e) => {
+                  e.stopPropagation()
+                  hoverRoute(DESTINATIONS[i].code)
+                  setCursor(true)
+                }}
+                onPointerOut={() => {
+                  hoverRoute(null)
+                  setCursor(false)
+                }}
+              >
+                <sphereGeometry args={[0.12, 10, 10]} />
+                <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+              </mesh>
+            </group>
+          )
+        })}
 
         <mesh position={hub}>
           <sphereGeometry args={[0.035, 16, 16]} />
@@ -439,24 +478,11 @@ export function Globe({ speed }: { speed: number }) {
           <meshBasicMaterial color={CYAN} transparent side={THREE.DoubleSide} />
         </mesh>
 
-        <group ref={plane} visible={false}>
-          <Plane />
-        </group>
-
-        <group ref={hubAnchor} position={hub.clone().multiplyScalar(1.01)}>
-          <Html zIndexRange={[5, 0]} style={{ pointerEvents: 'none' }}>
-            <div ref={hubEl} className="geo-anchor" data-side="right">
-              <HubTag s={state} />
-            </div>
-          </Html>
-        </group>
-        <group ref={destAnchor} position={destPos}>
-          <Html zIndexRange={[6, 0]} style={{ pointerEvents: 'none' }}>
-            <div ref={destEl} className="geo-anchor geo-anchor-dest" data-side="right">
-              <ArrivalCard s={state} />
-            </div>
-          </Html>
-        </group>
+        {Array.from({ length: PLANES }, (_, i) => (
+          <group key={i} ref={(el) => void (planeRefs.current[i] = el)} visible={false}>
+            <Plane lead={i === 0} />
+          </group>
+        ))}
       </group>
       <Orbits speed={speed} />
       <Atmosphere />

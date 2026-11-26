@@ -20,6 +20,7 @@ import (
 
 	"github.com/razi-king/portfolio/backend/internal/config"
 	"github.com/razi-king/portfolio/backend/internal/contact"
+	"github.com/razi-king/portfolio/backend/internal/fares"
 	"github.com/razi-king/portfolio/backend/internal/httpx"
 	"github.com/razi-king/portfolio/backend/internal/mailer"
 	"github.com/razi-king/portfolio/backend/internal/projects"
@@ -68,6 +69,7 @@ func run() error {
 	}
 
 	limiter := httpx.NewRateLimiter(cfg.RateLimitPerMinute)
+	fareLimiter := httpx.NewRateLimiter(cfg.FareRateLimitPerMinute)
 	safego.Go("rate-limit-cleanup", func() {
 		t := time.NewTicker(5 * time.Minute)
 		defer t.Stop()
@@ -77,11 +79,13 @@ func run() error {
 				return
 			case <-t.C:
 				limiter.Cleanup(10 * time.Minute)
+				fareLimiter.Cleanup(10 * time.Minute)
 			}
 		}
 	}, nil)
 
 	contactHandler := contact.NewHandler(contact.NewService(repo, pub))
+	fareHandler := fares.NewHandler(fares.NewService(fares.DefaultSuppliers(), []byte(cfg.FaresSecret)))
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {
@@ -96,6 +100,8 @@ func run() error {
 	})
 	mux.HandleFunc("GET /api/projects", catalog.List)
 	mux.HandleFunc("POST /api/contact", limiter.Limit(contactHandler.Submit))
+	mux.HandleFunc("GET /api/fares/search", fareLimiter.Limit(fareHandler.Search))
+	mux.HandleFunc("POST /api/fares/revalidate", fareLimiter.Limit(fareHandler.Revalidate))
 
 	srv := &http.Server{
 		Addr: ":" + cfg.Port,

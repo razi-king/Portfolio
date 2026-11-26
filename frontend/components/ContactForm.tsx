@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { SectionHead } from './Sections'
+import { API_URL as SITE_API, BASE_PATH, RESUME_URL } from '@/lib/content'
 
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '')
+const API_URL = SITE_API
 const EMAIL = 'raziinsane@gmail.com'
 
 type Field = 'name' | 'email' | 'subject' | 'message'
@@ -105,9 +106,28 @@ export default function ContactForm() {
 
   return (
     <section className="section contact" id="contact" aria-labelledby="contact-title">
-      <SectionHead n="04" label="Contact" title="Send me a message" id="contact-title">
-        It goes through my Go API and a RabbitMQ queue straight to my inbox. I reply within a day.
+      <SectionHead n="06" label="Contact" title="Hiring for a Go backend role?" id="contact-title">
+        I&apos;m open to backend engineering roles in Go, on-site in Mumbai or remote. Send a message and I&apos;ll reply
+        within a day. It travels through my Go API and a RabbitMQ queue to my inbox.
       </SectionHead>
+      <ul className="contact-links" data-reveal>
+        <li>
+          <a href="mailto:raziinsane@gmail.com"><span>Email</span>raziinsane@gmail.com</a>
+        </li>
+        <li>
+          <a href="https://www.linkedin.com/in/razi-ahmed-8s/" target="_blank" rel="noopener noreferrer"><span>LinkedIn</span>razi-ahmed-8s</a>
+        </li>
+        <li>
+          <a href="https://github.com/razi-king" target="_blank" rel="noopener noreferrer"><span>GitHub</span>razi-king</a>
+        </li>
+        <li>
+          {RESUME_URL ? (
+            <a href={RESUME_URL} download="Razi_Ahmed_Resume.pdf"><span>Résumé</span>Download PDF</a>
+          ) : (
+            <a href={`${BASE_PATH}/recruiter/`}><span>One-pager</span>Recruiter summary</a>
+          )}
+        </li>
+      </ul>
       <form className="form hud" data-reveal ref={form} onSubmit={onSubmit} noValidate>
         {field('name', 'Your name', <input {...aria('name')} autoComplete="name" required maxLength={80} />)}
         {field('email', 'Email', <input {...aria('email')} type="email" autoComplete="email" required />)}

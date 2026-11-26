@@ -1,6 +1,16 @@
 import * as THREE from 'three'
 
-export { HUB, DESTINATIONS, FLIGHT_EVENT, legState, type City, type FlightState } from '@/lib/flights'
+export {
+  HUB,
+  DESTINATIONS,
+  PLANES,
+  ROUTE_KM,
+  flightStore,
+  legState,
+  type City,
+  type FlightState,
+  type Phase,
+} from '@/lib/flights'
 
 export const GOLD = new THREE.Color('#F2C14E')
 export const AMETHYST = new THREE.Color('#8B5CFF')

@@ -3,7 +3,8 @@ import Hangar from '@/components/Hangar'
 import ContactForm from '@/components/ContactForm'
 import Nav from '@/components/Nav'
 import Fx from '@/components/Fx'
-import { Footer, Hero, Journey, Marquee, Routes } from '@/components/Sections'
+import FareDemo from '@/components/FareDemo'
+import { Footer, Hero, Journey, Marquee, Routes, Strengths } from '@/components/Sections'
 
 export default function Home() {
   return (
@@ -16,7 +17,9 @@ export default function Home() {
       <main id="main">
         <Hero />
         <Marquee />
+        <Strengths />
         <Routes />
+        <FareDemo />
         <Hangar />
         <Journey />
         <ContactForm />
