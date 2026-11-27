@@ -127,15 +127,15 @@ export function Strengths() {
   )
 }
 
-/** A 90-second animated walk-through: one trip from Mumbai to the Palm, paused at each backend step. */
+/** A narrated, three-minute animated walk-through: one trip from Mumbai to the Palm, paused at each backend step. */
 function TripVideo() {
   return (
     <figure className="trip-video hud" data-reveal>
       <div className="trip-video-text">
         <h3>Ride along: Mumbai to Palm Jumeirah</h3>
         <p>
-          A 90-second trip that pauses at each step to show the backend behind it: the parallel flight search, the
-          price check before booking, and the transfer booking engine.
+          A narrated three-minute trip. I freeze the world at each step to show the backend behind it: the parallel
+          flight search, the price check before booking, the airline integrations and the transfer booking engine.
         </p>
       </div>
       <video
