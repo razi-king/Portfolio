@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@font-face{font-family:Unbounded;font-weight:500;src:url(fonts/unbounded-latin-500-normal.woff2)}
+@font-face{font-family:Unbounded;font-weight:700;src:url(fonts/unbounded-latin-700-normal.woff2)}
+@font-face{font-family:Unbounded;font-weight:800;src:url(fonts/unbounded-latin-800-normal.woff2)}
+@font-face{font-family:Inst;font-weight:400;src:url(fonts/instrument-sans-latin-400-normal.woff2)}
+@font-face{font-family:Inst;font-weight:500;src:url(fonts/instrument-sans-latin-500-normal.woff2)}
+@font-face{font-family:Inst;font-weight:600;src:url(fonts/instrument-sans-latin-600-normal.woff2)}
+@font-face{font-family:Inst;font-weight:700;src:url(fonts/instrument-sans-latin-700-normal.woff2)}
+@font-face{font-family:Mono;font-weight:400;src:url(fonts/jetbrains-mono-latin-400-normal.woff2)}
+@font-face{font-family:Mono;font-weight:600;src:url(fonts/jetbrains-mono-latin-600-normal.woff2)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#05060f}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;font-family:Inst,sans-serif;color:#e8ecff}
+.layer{position:absolute;inset:0}
+svg.full{position:absolute;inset:0;width:1920px;height:1080px}
+.abs{position:absolute}
+/* speech bubble */
+.bubble{position:absolute;background:#f3f5ff;color:#0a0c22;border-radius:26px;padding:24px 32px;font:600 34px/1.32 Inst;box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.bubble .who{display:block;font:600 20px/1 Mono;color:#7a3cff;margin-bottom:10px}
+.bubble::after{content:"";position:absolute;width:34px;height:34px;background:#f3f5ff;transform:rotate(45deg);border-radius:4px}
+.bubble.tl::after{left:46px;bottom:-14px}
+.bubble.tr::after{right:46px;bottom:-14px}
+.bubble.lt::after{left:-14px;top:40px}
+.bubble.rt::after{right:-14px;top:60px}
+.bubble.tc::after{left:272px;bottom:-14px}
+.bubble.no::after{display:none}
+.caret{display:inline-block;width:3px;height:1em;background:#7a3cff;vertical-align:-0.15em;margin-left:2px}
+/* phone */
+.phone{position:absolute;width:400px;height:820px;border-radius:56px;background:#0b0c16;border:3px solid #2b2f55;box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 0 0 10px #12142a;padding:22px}
+.screen{position:relative;width:100%;height:100%;border-radius:40px;background:linear-gradient(180deg,#10132e,#070815);overflow:hidden;padding:64px 26px 26px}
+.notch{position:absolute;top:14px;left:50%;width:120px;height:30px;margin-left:-60px;border-radius:20px;background:#000}
+.app-h{font:700 30px/1.1 Unbounded;color:#e8ecff;margin-bottom:22px}
+.field{border:2px solid rgba(94,240,255,.25);border-radius:18px;padding:14px 18px;margin-bottom:14px;background:rgba(255,255,255,.03)}
+.field small{display:block;font:500 17px Mono;color:#8e96c4;margin-bottom:4px}
+.field b{font:600 28px Inst;color:#e8ecff}
+.btn{margin-top:18px;border-radius:999px;padding:20px;text-align:center;font:700 26px Inst;background:#5ef0ff;color:#05060f}
+.btn.ok{background:#49f5a8}
+.row{display:flex;justify-content:space-between;align-items:center;border-radius:18px;padding:16px 18px;margin-bottom:12px;background:rgba(255,255,255,.05);border:2px solid transparent}
+.row.sel{border-color:#5ef0ff;background:rgba(94,240,255,.1)}
+.row .l{font:600 22px Inst}
+.row .l small{display:block;font:400 17px Mono;color:#8e96c4;margin-top:4px}
+.row .p{font:700 26px Inst;color:#f2c14e}
+.note{border-radius:18px;padding:18px;font:600 22px/1.35 Inst;margin-top:14px}
+.note.warn{background:rgba(242,193,78,.14);border:2px solid #f2c14e;color:#ffe1a0}
+.note.good{background:rgba(73,245,168,.12);border:2px solid #49f5a8;color:#b9ffe0}
+.spin{width:64px;height:64px;border-radius:50%;border:7px solid rgba(94,240,255,.2);border-top-color:#5ef0ff;margin:30px auto}
+/* overlays */
+.paused{position:absolute;left:60px;top:52px;display:flex;align-items:center;gap:16px;font:600 26px Mono;color:#f2c14e;background:rgba(5,6,15,.8);border:2px solid rgba(242,193,78,.6);border-radius:999px;padding:12px 26px}
+.paused i{display:inline-block;width:8px;height:26px;background:#f2c14e;box-shadow:14px 0 0 #f2c14e;margin-right:14px}
+.panel{position:absolute;border:2px solid rgba(94,240,255,.35);background:rgba(8,10,28,.96);border-radius:22px;box-shadow:0 0 0 1px rgba(139,92,255,.25),0 24px 60px rgba(0,0,0,.5)}
+.node{position:absolute;border-radius:18px;padding:18px 22px;background:#0d1030;border:2px solid rgba(94,240,255,.45);font:600 26px Inst;text-align:center}
+.node small{display:block;font:400 18px Mono;color:#8e96c4;margin-top:6px}
+.node.on{border-color:#49f5a8;box-shadow:0 0 30px rgba(73,245,168,.35)}
+.node.gold{border-color:#f2c14e}
+.chip{display:inline-flex;align-items:center;gap:12px;font:600 26px Inst;padding:14px 24px;border-radius:999px;background:rgba(8,10,28,.85);border:2px solid rgba(94,240,255,.35)}
+.dot{width:14px;height:14px;border-radius:50%}
+.mono{font-family:Mono}
+.title{font:800 86px/1.02 Unbounded;letter-spacing:-.01em}
+.kick{font:500 28px Mono;color:#5ef0ff}
+.cap{position:absolute;font:600 22px Mono;color:#8e96c4}
+.vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55))}
+.fade{position:absolute;inset:0;background:#000}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script src="timeline.js"></script>
+<script>
+// ------------------------------------------------------------ helpers
+const W = 1920, H = 1080
+const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x))
+const pr = (t, a, b) => cl((t - a) / (b - a))           // progress of t through [a,b]
+const eo = x => 1 - Math.pow(1 - x, 3)                   // ease-out
+const eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2
+const L = (a, b, x) => a + (b - a) * x
+const inr = n => '₹' + n.toLocaleString('en-IN')
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296 } }
+
+// ------------------------------------------------------------ the character (based on Razi's photo:
+// big dark curls, gold aviators with sunset lenses, black high-collar coat over a black shirt, watch)
+const SKIN = '#b5805a', SKIN_D = '#9a6745', HAIR = '#16100d', HAIR_H = '#2c1e17', COAT = '#1b1c25', COAT_D = '#121219', COAT_L = '#262734'
+
+function lensDefs(id) {
+  return `<linearGradient id="lens${id}" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffcf7a"/><stop offset=".45" stop-color="#f08a3c"/><stop offset=".75" stop-color="#4a5d8a"/><stop offset="1" stop-color="#1d2b4a"/></linearGradient>`
+}
+function head(o, id) {
+  const tilt = o.tilt || 0
+  let hair = ''
+  const r = rng(7)
+  // curls: volume on top, tapered sides (the photo's silhouette)
+  for (let i = 0; i < 24; i++) {
+    const a = Math.PI * (1.06 + 0.88 * i / 23)
+    const cx = Math.cos(a) * (54 + r() * 6), cy = -612 + Math.sin(a) * (50 + r() * 8)
+    hair += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${(17 + r() * 8).toFixed(1)}" fill="${HAIR}"/>`
+  }
+  for (let i = 0; i < 9; i++) hair += `<circle cx="${(-44 + i * 11).toFixed(1)}" cy="${(-668 - Math.sin(i / 8 * Math.PI) * 14 + r() * 6).toFixed(1)}" r="${(16 + r() * 6).toFixed(1)}" fill="${HAIR}"/>`
+  for (let i = 0; i < 18; i++) {
+    const cx = -46 + r() * 92, cy = -690 + r() * 70
+    hair += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${(5 + r() * 6).toFixed(1)}" fill="none" stroke="${HAIR_H}" stroke-width="2" opacity=".45"/>`
+  }
+  const talkOpen = o.amp != null ? o.amp * 11 : (o.talk ? (3 + 6 * Math.abs(Math.sin(o.t * 17))) : 0)
+  const mouth = talkOpen > 1
+    ? `<path d="M-13,-524 Q0,${(-524 + talkOpen * 2).toFixed(1)} 13,-524 Z" fill="#2a120c" stroke="#4a2418" stroke-width="2.5"/>`
+    : (o.smile ? `<path d="M-14,-525 Q0,-516 14,-525" stroke="#4a2418" stroke-width="4" fill="none" stroke-linecap="round"/>`
+      : `<path d="M-13,-523 L13,-523" stroke="#4a2418" stroke-width="4" fill="none" stroke-linecap="round"/>`)
+  const lens = (sx) => `<path transform="translate(${sx},-562)" d="M-25,-12 Q-27,12 -6,17 Q16,18 22,0 Q25,-13 8,-15 Q-14,-17 -25,-12Z" fill="url(#lens${id})" stroke="#d9b45c" stroke-width="3.2"/>`
+  return `<g transform="rotate(${tilt} 0 -505)">
+    <rect x="-23" y="-516" width="46" height="44" fill="${SKIN_D}"/>
+    <ellipse cx="-51" cy="-556" rx="9" ry="15" fill="${SKIN_D}"/><ellipse cx="51" cy="-556" rx="9" ry="15" fill="${SKIN_D}"/>
+    <path d="M-50,-596 Q-53,-530 -28,-505 Q0,-494 28,-505 Q53,-530 50,-596 Q48,-630 0,-632 Q-48,-630 -50,-596Z" fill="${SKIN}"/>
+    <path d="M34,-596 Q50,-560 42,-528 Q32,-508 14,-500 Q40,-532 34,-596Z" fill="${SKIN_D}" opacity=".55"/>
+    <path d="M-50,-560 L-48,-600 L-40,-600 L-42,-566Z M50,-560 L48,-600 L40,-600 L42,-566Z" fill="${HAIR}"/>
+    <ellipse cx="0" cy="-628" rx="56" ry="30" fill="${HAIR}"/>
+    ${hair}
+    <path d="M-44,-590 Q-30,-598 -12,-592" stroke="${HAIR}" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M12,-592 Q30,-598 44,-590" stroke="${HAIR}" stroke-width="6" fill="none" stroke-linecap="round"/>
+    ${lens(-24)}${lens(24)}
+    <path d="M-3,-572 Q0,-576 3,-572" stroke="#d9b45c" stroke-width="3" fill="none"/>
+    <path d="M-50,-570 L-46,-572 M50,-570 L46,-572" stroke="#d9b45c" stroke-width="3"/>
+    <path d="M-1,-556 L-6,-538 Q0,-534 6,-538" stroke="${SKIN_D}" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M-33,-576 Q-26,-581 -18,-576" stroke="#fff" stroke-width="3" fill="none" opacity=".55"/>
+    <path d="M15,-576 Q22,-581 30,-576" stroke="#fff" stroke-width="3" fill="none" opacity=".55"/>
+    ${mouth}
+    ${o.glint != null && o.glint > 0 && o.glint < 1 ? `<defs><clipPath id="gl${id}"><path transform="translate(-24,-562)" d="M-25,-12 Q-27,12 -6,17 Q16,18 22,0 Q25,-13 8,-15 Q-14,-17 -25,-12Z"/><path transform="translate(24,-562)" d="M-25,-12 Q-27,12 -6,17 Q16,18 22,0 Q25,-13 8,-15 Q-14,-17 -25,-12Z"/></clipPath></defs>
+      <g clip-path="url(#gl${id})"><rect x="${-90 + o.glint * 180}" y="-600" width="14" height="80" fill="#fff" opacity=".85" transform="rotate(25 ${-90 + o.glint * 180} -560)"/></g>` : ''}
+  </g>`
+}
+// one arm: a1 rotates at the shoulder, a2 at the elbow (0 = hanging straight down)
+function arm(sx, sy, a1, a2, opt = {}) {
+  const hand = opt.pocket ? '' : `<circle cx="${sx}" cy="${sy + 220}" r="19" fill="${SKIN}"/>` + (opt.thumb ? `<rect x="${sx - 7}" y="${sy + 222}" width="14" height="30" rx="7" fill="${SKIN}"/>` : '')
+  const watch = opt.watch ? `<rect x="${sx - 21}" y="${sy + 186}" width="42" height="16" rx="5" fill="#2a2b33"/><rect x="${sx - 10}" y="${sy + 184}" width="20" height="20" rx="5" fill="#c9cbd6"/>` : ''
+  const phone = opt.phone ? `<rect x="${sx - 22}" y="${sy + 190}" width="44" height="78" rx="9" fill="#0b0c16" stroke="#3a3f6b" stroke-width="3"/><rect x="${sx - 17}" y="${sy + 196}" width="34" height="64" rx="5" fill="#5ef0ff" opacity=".8"/>` : ''
+  const fore = opt.pocket ? 88 : 104
+  return `<g transform="rotate(${a1} ${sx} ${sy})">
+     <rect x="${sx - 22}" y="${sy - 10}" width="44" height="124" rx="20" fill="${COAT}"/>
+     <g transform="rotate(${a2} ${sx} ${sy + 108})">
+       <rect x="${sx - 21}" y="${sy + 96}" width="42" height="${fore}" rx="19" fill="${COAT}"/>
+       <rect x="${sx - 21}" y="${sy + 180}" width="42" height="12" rx="5" fill="${COAT_D}" opacity="${opt.pocket ? 0 : 1}"/>
+       ${hand}${watch}${phone}
+     </g></g>`
+}
+/* razi({x,y,s, t, walk, talk, smile, la:[a1,a2], ra:[a1,a2], phone, pockets, tilt}) */
+function razi(o) {
+  const id = o.id || 'a'
+  let swing = 0, bob = 0
+  if (o.walk) { swing = Math.sin(o.t * 9) * 20; bob = -Math.abs(Math.cos(o.t * 9)) * 9 }
+  let la = o.la || [10, -6], ra = o.ra || [-10, 6]
+  if (o.walk) { la = [10 + swing * .6, -10]; ra = [-10 + swing * .6, 10] }
+  if (o.pockets) { la = [14, -22]; ra = [-14, 22] }
+  const breathe = Math.sin((o.t || 0) * 2.2) * 2
+  const legs = `
+    <g transform="rotate(${swing} -34 -238)"><rect x="-58" y="-245" width="46" height="228" rx="16" fill="#111218"/><ellipse cx="-40" cy="-14" rx="36" ry="15" fill="#07070a"/></g>
+    <g transform="rotate(${-swing} 34 -238)"><rect x="12" y="-245" width="46" height="228" rx="16" fill="#15161d"/><ellipse cx="40" cy="-14" rx="36" ry="15" fill="#07070a"/></g>`
+  const coat = `
+    <path d="M-84,-482 Q-106,-474 -110,-430 L-124,-212 Q0,-196 124,-212 L110,-430 Q106,-474 84,-482Z" fill="${COAT}"/>
+    <path d="M-36,-486 L0,-392 L36,-486Z" fill="#0b0c11"/>
+    <circle cx="0" cy="-450" r="3.2" fill="#2d2e3a"/><circle cx="0" cy="-420" r="3.2" fill="#2d2e3a"/>
+    <path d="M-36,-486 L-66,-472 L-22,-352 L0,-392Z" fill="${COAT_L}"/>
+    <path d="M36,-486 L66,-472 L22,-352 L0,-392Z" fill="${COAT_L}"/>
+    <path d="M-40,-498 L-70,-472 L-44,-476Z M40,-498 L70,-472 L44,-476Z" fill="${COAT_L}"/>
+    <path d="M0,-392 L0,-212" stroke="${COAT_D}" stroke-width="4"/>
+    <path d="M-110,-300 Q-60,-290 -40,-300 M110,-300 Q60,-290 40,-300" stroke="${COAT_D}" stroke-width="4" fill="none"/>`
+  const armL = arm(-96, -466, la[0], la[1], { pocket: o.pockets, phone: o.phone })
+  const armR = arm(96, -466, ra[0], ra[1], { pocket: o.pockets, watch: !o.pockets, thumb: o.thumb })
+  return `<g transform="translate(${o.x},${o.y + bob}) scale(${o.s || 1})">
+    <defs>${lensDefs(id)}</defs>
+    <ellipse cx="0" cy="0" rx="120" ry="18" fill="#000" opacity="${o.shadow ?? .35}"/>
+    ${legs}<g transform="translate(0,${breathe})">${coat}${armL}${armR}${head(o, id)}</g>
+  </g>`
+}
+// head-and-shoulders badge, cropped from the same drawing
+function badge(x, y, size, t, talk, id = 'b') {
+  return `<svg class="abs" style="left:${x}px;top:${y}px;width:${size}px;height:${size}px;border-radius:50%;background:radial-gradient(circle at 50% 30%,#3a2a6a,#0d1030);border:4px solid #5ef0ff" viewBox="-130 -700 260 260">
+    ${razi({ x: 0, y: 0, s: 1, t, talk, id, shadow: 0 })}</svg>`
+}
+
+// ------------------------------------------------------------ speech
+// lines: [[t0, t1, text]], typed at 42 chars/s; returns html + whether the mouth should move
+function say(lines, lt, box) {
+  for (const [a, b, text] of lines) {
+    if (lt >= a && lt < b) {
+      const n = Math.floor((lt - a) * 42)
+      const shown = text.slice(0, n)
+      const typing = n < text.length
+      const op = Math.min(pr(lt, a, a + .15), 1 - pr(lt, b - .2, b))
+      const sc = L(.9, 1, eo(pr(lt, a, a + .25)))
+      // the full text sets the bubble size up front, so it never grows while typing
+      const html = `<div class="bubble ${box.tail || 'tl'}" style="left:${box.x}px;${box.bottom != null ? `bottom:${box.bottom}px` : `top:${box.y}px`};width:${box.w}px;opacity:${op};transform:scale(${sc});transform-origin:${box.origin || '10% 100%'}">
+        <span class="who">Razi</span><div style="position:relative"><div style="visibility:hidden">${text}</div><div style="position:absolute;left:0;top:0;right:0">${shown}${typing ? '<span class="caret"></span>' : ''}</div></div></div>`
+      return { html, talk: typing }
+    }
+  }
+  return { html: '', talk: false }
+}
+const fadeEdges = (lt, dur, a = .45, b = .45) => {
+  const o = Math.max(1 - pr(lt, 0, a), pr(lt, dur - b, dur))
+  return o > 0 ? `<div class="fade" style="opacity:${o}"></div>` : ''
+}
+const pausedChip = (lt, a, b) => {
+  const o = Math.min(pr(lt, a, a + .25), 1 - pr(lt, b - .25, b))
+  return o > 0 ? `<div class="paused" style="opacity:${o}"><i></i>Paused: behind the scenes</div>` : ''
+}
+// world layer wrapper: everything in here freezes and loses colour while paused
+const world = (inner, frozen) => `<div class="layer" style="filter:grayscale(${frozen}) brightness(${1 - .45 * frozen})">${inner}</div>`
+const freeze = (lt, a, b) => Math.min(eo(pr(lt, a, a + .4)), 1 - eo(pr(lt, b - .4, b)))
+
+// ------------------------------------------------------------ backdrops
+const STARS = (() => { const r = rng(3); return Array.from({ length: 160 }, () => [r() * W, r() * 620, r() * 1.8 + .4, r()]) })()
+const MUMBAI = (() => {
+  const r = rng(11), out = []; let x = -20
+  while (x < W + 40) { const w = 50 + r() * 90, h = 120 + r() * 300 * (x > 1100 && x < 1500 ? 1.4 : 1); out.push([x, w, h, r()]); x += w + r() * 12 }
+  return out
+})()
+function stars(t, op = 1) {
+  return STARS.map(([x, y, s, ph]) => `<circle cx="${x}" cy="${y}" r="${s}" fill="#fff" opacity="${(op * (.35 + .5 * Math.abs(Math.sin(t * 1.3 + ph * 9)))).toFixed(2)}"/>`).join('')
+}
+function mumbaiBg(t) {
+  const r = rng(5)
+  let b = ''
+  for (const [x, w, h, k] of MUMBAI) {
+    const y = 760 - h
+    b += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${k > .5 ? '#0d0f26' : '#11143a'}"/>`
+    for (let wy = y + 14; wy < 740; wy += 26) for (let wx = x + 10; wx < x + w - 12; wx += 20)
+      if (r() > .72) b += `<rect x="${wx}" y="${wy}" width="8" height="11" fill="${r() > .5 ? '#f2c14e' : '#ffd98a'}" opacity="${.35 + r() * .5}"/>`
+  }
+  // sea link: two pylons and fanned cables
+  let link = `<rect x="0" y="842" width="1920" height="10" fill="#1a1d48"/>`
+  for (const px of [700, 1260]) {
+    link += `<path d="M${px - 26},852 L${px - 6},600 L${px + 6},600 L${px + 26},852Z" fill="#20245a"/>`
+    for (let i = 1; i <= 9; i++) link += `<line x1="${px}" y1="${610 + i * 6}" x2="${px - i * 30}" y2="846" stroke="#5ef0ff" stroke-opacity=".35" stroke-width="2"/><line x1="${px}" y1="${610 + i * 6}" x2="${px + i * 30}" y2="846" stroke="#5ef0ff" stroke-opacity=".35" stroke-width="2"/>`
+  }
+  return `<svg class="full" viewBox="0 0 1920 1080">
+    <defs><linearGradient id="sky1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#05060f"/><stop offset=".6" stop-color="#1a1450"/><stop offset="1" stop-color="#3a1f5c"/></linearGradient>
+    <linearGradient id="sea1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14123a"/><stop offset="1" stop-color="#05060f"/></linearGradient></defs>
+    <rect width="1920" height="1080" fill="url(#sky1)"/>${stars(t)}
+    <circle cx="1560" cy="180" r="56" fill="#f6efd8" opacity=".9"/><circle cx="1580" cy="168" r="52" fill="#1a1450" opacity=".0"/>
+    ${b}<rect x="0" y="760" width="1920" height="320" fill="url(#sea1)"/>
+    ${Array.from({ length: 30 }, (_, i) => `<rect x="${(i * 137 + t * 30) % 1980 - 60}" y="${790 + (i % 7) * 34}" width="${60 + (i % 5) * 20}" height="3" fill="#f2c14e" opacity=".18"/>`).join('')}
+    ${link}</svg>`
+}
+function loungeBg(t) {
+  let panes = ''
+  for (let i = 0; i < 6; i++) panes += `<rect x="${80 + i * 300}" y="120" width="280" height="520" fill="#0b1236"/><rect x="${80 + i * 300}" y="120" width="280" height="520" fill="none" stroke="#1c2152" stroke-width="10"/>`
+  let lights = ''
+  for (let i = 0; i < 40; i++) lights += `<circle cx="${100 + i * 46}" cy="${560 + (i % 3) * 10}" r="3" fill="${i % 4 ? '#5ef0ff' : '#f2c14e'}" opacity="${.3 + .3 * Math.abs(Math.sin(t * 2 + i))}"/>`
+  return `<svg class="full" viewBox="0 0 1920 1080">
+    <rect width="1920" height="1080" fill="#090b20"/>${panes}${lights}
+    <path d="M1040,600 L1100,430 L1160,430 L1140,600Z" fill="#1a1f4a"/><rect x="900" y="560" width="520" height="40" rx="20" fill="#1a1f4a"/>
+    <rect x="0" y="660" width="1920" height="420" fill="#0d0f26"/>
+    <rect x="0" y="660" width="1920" height="4" fill="#5ef0ff" opacity=".25"/>
+    <rect x="1460" y="40" width="400" height="62" rx="10" fill="#0d1030" stroke="#2b2f55" stroke-width="2"/>
+    <text x="1484" y="82" font-family="Mono" font-size="26" fill="#f2c14e">BOM T2 · Gate 34</text></svg>`
+}
+function arrivalsBg(t) {
+  let palms = ''
+  const palm = (x, s) => {
+    let f = `<path d="M${x},640 Q${x + 10 * s},${640 - 150 * s} ${x + 4 * s},${640 - 260 * s}" stroke="#2a1a2e" stroke-width="${12 * s}" fill="none"/>`
+    for (let i = 0; i < 7; i++) { const a = -Math.PI * (.08 + .84 * i / 6); f += `<path d="M${x + 4 * s},${640 - 260 * s} q${Math.cos(a) * 60 * s},${Math.sin(a) * 40 * s} ${Math.cos(a) * 130 * s},${Math.sin(a) * 20 * s + 50 * s}" stroke="#2a1a2e" stroke-width="${10 * s}" fill="none" stroke-linecap="round"/>` }
+    return f
+  }
+  palms = palm(260, 1) + palm(560, .8) + palm(1380, .9) + palm(1700, 1.1)
+  return `<svg class="full" viewBox="0 0 1920 1080">
+    <defs><linearGradient id="dawn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b1b4a"/><stop offset=".7" stop-color="#d0784a"/><stop offset="1" stop-color="#f2c14e"/></linearGradient></defs>
+    <rect width="1920" height="1080" fill="#1a1328"/>
+    <rect x="60" y="150" width="1800" height="490" fill="url(#dawn)"/>${palms}
+    ${Array.from({ length: 7 }, (_, i) => `<rect x="${60 + i * 300}" y="150" width="12" height="490" fill="#1a1328"/>`).join('')}
+    <rect x="0" y="640" width="1920" height="440" fill="#241a33"/><rect x="0" y="640" width="1920" height="4" fill="#f2c14e" opacity=".4"/>
+    <rect x="560" y="40" width="800" height="84" rx="12" fill="#0d1030" stroke="#f2c14e" stroke-width="3"/>
+    <text x="960" y="96" text-anchor="middle" font-family="Unbounded" font-weight="700" font-size="38" fill="#f2c14e">Dubai · Arrivals  →</text></svg>`
+}
+
+// ------------------------------------------------------------ phone screens
+function phone(x, y, s, inner, extra = '') {
+  return `<div class="phone" style="left:${x}px;top:${y}px;transform:scale(${s});transform-origin:0 0;${extra}"><div class="screen"><div class="notch"></div>${inner}</div></div>`
+}
+const tap = (on) => on ? 'box-shadow:0 0 0 10px rgba(94,240,255,.35);transform:scale(.96)' : ''
+
+// ============================================================ v2 engine: voice-driven timeline
+const EXTRA_CSS = `
+.chapter{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,#1a1450,#05060f 70%);display:flex;align-items:center;padding-left:170px}
+.chapter .n{font:800 300px/1 Unbounded;color:transparent;-webkit-text-stroke:3px #5ef0ff;opacity:.9}
+.chapter .t{font:800 104px/1.05 Unbounded;margin-left:60px}
+.chapter .t small{display:block;font:500 30px Mono;color:#8e96c4;margin-top:22px}
+.wipe{position:absolute;top:-10%;bottom:-10%;width:130%;background:linear-gradient(100deg,#5ef0ff,#8b5cff 45%,#ff5fd2);transform-origin:0 50%}
+.scan{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 2px,transparent 2px 5px);mix-blend-mode:overlay}
+.flash{position:absolute;inset:0;background:#fff}
+.code{position:absolute;border-radius:18px;background:#070815;border:2px solid #2b2f55;padding:26px 30px;font:400 25px/1.55 Mono;color:#c9d0f5;white-space:pre;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.code .k{color:#ff5fd2}.code .f{color:#5ef0ff}.code .c{color:#6c74a8}.code .s{color:#f2c14e}
+.slowmo{position:absolute;font:600 22px Mono;color:#ff5fd2;border:2px solid #ff5fd2;border-radius:999px;padding:6px 16px}
+.race{height:30px;border-radius:15px}
+.layerbox{position:absolute;left:40px;width:560px;border-radius:18px;padding:22px 26px;background:#0d1030;border:2px solid #2b2f55;font:600 28px Inst}
+.layerbox small{display:block;font:400 20px Mono;color:#8e96c4;margin-top:6px}
+`
+document.head.insertAdjacentHTML('beforeend', `<style>${EXTRA_CSS}</style>`)
+
+let SC = null   // current scene data from timeline.js
+const cue = (n) => SC.cues[n]
+const vo = (id) => SC.vo.find(v => v.id === id)
+// time a word is spoken, estimated from its position in the line
+function wordAt(id, word) {
+  const v = vo(id), i = v.text.indexOf(word)
+  return v.s + (v.e - v.s) * Math.max(0, i) / v.text.length
+}
+// subtitle bubble that types along with the voice, and the mouth amplitude right now
+function speak(lt, box) {
+  const vs = SC.vo
+  for (let k = 0; k < vs.length; k++) {
+    const v = vs[k], next = vs[k + 1]
+    const hold = Math.min(v.e + .9, next ? next.s - .05 : v.e + .9)
+    if (lt >= v.s - .12 && lt < hold) {
+      const p = cl((lt - v.s) / (v.e - v.s) * 1.08)
+      const n = Math.ceil(p * v.text.length)
+      const fi = Math.floor((lt - v.s) * 30)
+      const amp = fi >= 0 && fi < v.env.length ? v.env[fi] : 0
+      const op = Math.min(pr(lt, v.s - .12, v.s + .08), 1 - pr(lt, hold - .15, hold))
+      const sc = L(.92, 1, eo(pr(lt, v.s - .12, v.s + .2)))
+      const typing = n < v.text.length
+      const html = `<div class="bubble ${box.tail || 'tl'}" style="left:${box.x}px;top:${box.y}px;width:${box.w}px;opacity:${op};transform:scale(${sc});transform-origin:${box.origin || '20% 100%'}">
+        <span class="who">Razi</span><div style="position:relative"><div style="visibility:hidden">${v.text}</div><div style="position:absolute;left:0;top:0;right:0">${v.text.slice(0, n)}${typing ? '<span class="caret"></span>' : ''}</div></div></div>`
+      return { html, amp, talk: amp > .05 }
+    }
+  }
+  return { html: '', amp: 0, talk: false }
+}
+const cam = (inner, s = 1, x = 0, y = 0, ox = 960, oy = 540) => `<div class="layer" style="transform:translate(${x}px,${y}px) scale(${s});transform-origin:${ox}px ${oy}px">${inner}</div>`
+function wipes(lt, dur, inOn = true, outOn = true) {
+  let h = ''
+  if (inOn && lt < .5) { const p = eio(pr(lt, 0, .5)); h += `<div class="wipe" style="left:${L(-15, -150, p)}%;transform:skewX(-12deg)"></div>` }
+  if (outOn && lt > dur - .5) { const p = eio(pr(lt, dur - .5, dur)); h += `<div class="wipe" style="left:${L(110, -15, p)}%;transform:skewX(-12deg)"></div>` }
+  return h
+}
+function chapterCard(lt, n, title, sub) {
+  if (lt > 2.0) return ''
+  const a = eo(pr(lt, .25, .9)), b = eio(pr(lt, 1.55, 2.0))
+  return `<div class="chapter" style="transform:translateX(${-b * 105}%)">
+    <span class="n" style="opacity:${a};transform:translateY(${(1 - a) * 60}px)">${n}</span>
+    <span class="t" style="opacity:${eo(pr(lt, .45, 1.1))};transform:translateX(${(1 - eo(pr(lt, .45, 1.1))) * 50}px)">${title}<small>${sub}</small></span></div>`
+}
+// freeze amount (0..1) between the freeze and unfreeze cues
+const frozen = (lt, a, b) => Math.min(eo(pr(lt, a, a + .35)), 1 - eo(pr(lt, b, b + .5)))
+function freezeFx(lt, a, b, label) {
+  const f = frozen(lt, a, b)
+  let h = ''
+  const fl = Math.max(1 - pr(lt, a, a + .25), 0) * (lt >= a ? 1 : 0)
+  const fl2 = Math.max(1 - pr(lt, b, b + .25), 0) * (lt >= b ? 1 : 0)
+  if (fl > 0) h += `<div class="flash" style="opacity:${fl * .8}"></div>`
+  if (fl2 > 0) h += `<div class="flash" style="opacity:${fl2 * .5}"></div>`
+  if (f > 0) h += `<div class="scan" style="opacity:${f}"></div><div class="paused" style="opacity:${f}"><i></i>${label}</div>`
+  return h
+}
+const worldFx = (inner, f) => `<div class="layer" style="filter:grayscale(${f}) brightness(${1 - .5 * f}) blur(${(f * 2.2).toFixed(2)}px)">${inner}</div>`
+// Razi steps out of the frozen picture toward the camera, and back in on unfreeze
+function stepPose(lt, a, b) {
+  const out = eio(pr(lt, a + .25, a + 1.0)), back = eio(pr(lt, b, b + .8))
+  const k = out * (1 - back)
+  const walking = (lt > a + .25 && lt < a + 1.0) || (lt > b && lt < b + .8)
+  return { x: L(430, 330, k), y: L(1045, 1095, k), s: L(.9, 1.02, k), walk: walking, out: k > .5 }
+}
+const snapPose = (lt, at) => (lt > at - .5 && lt < at + .35) ? [-20, -150] : null
+function sparks(x, y, lt, at) {
+  const p = pr(lt, at, at + .35); if (p <= 0 || p >= 1) return ''
+  return Array.from({ length: 8 }, (_, i) => { const a = i / 8 * Math.PI * 2, r1 = 20 + p * 30, r2 = 34 + p * 60
+    return `<line x1="${x + Math.cos(a) * r1}" y1="${y + Math.sin(a) * r1}" x2="${x + Math.cos(a) * r2}" y2="${y + Math.sin(a) * r2}" stroke="#f2c14e" stroke-width="5" stroke-linecap="round" opacity="${1 - p}"/>` }).join('')
+}
+const BOX2 = { x: 120, y: 120, w: 640, tail: 'tc', origin: '40% 100%' }
+
+// ------------------------------------------------------------ plane (side view, nose to the right)
+function plane(x, y, s, rot, gear = 0, lights = 0) {
+  let win = ''
+  for (let i = 0; i < 20; i++) win += `<rect x="${130 + i * 24}" y="18" width="11" height="14" rx="5" fill="#9fd8ff"/>`
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s}) translate(-370,-40)">
+    <path d="M60,40 L-10,-120 L50,-120 L150,20Z" fill="#d7dcef"/><path d="M5,-110 L45,-110 L48,-96 L12,-96Z" fill="#8b5cff"/>
+    <text x="22" y="-40" font-family="Unbounded" font-weight="800" font-size="26" fill="#8b5cff" transform="rotate(-62 22 -40)">RK</text>
+    <path d="M20,30 L-30,0 L0,0 L70,30Z" fill="#c5cbe3"/>
+    <path d="M40,0 H620 Q700,0 745,38 Q700,80 620,80 H60 Q10,80 0,40 Q10,0 40,0Z" fill="#f3f5ff"/>
+    <rect x="40" y="48" width="680" height="9" fill="#5ef0ff"/>
+    ${win}<path d="M660,12 Q690,14 712,30 L668,30Z" fill="#1c2a4a"/>
+    <path d="M300,52 L190,150 L250,150 L420,52Z" fill="#c5cbe3"/>
+    <ellipse cx="300" cy="100" rx="62" ry="22" fill="#b5bbd6"/><ellipse cx="358" cy="100" rx="8" ry="20" fill="#3a3f6b"/>
+    ${gear > 0 ? `<g opacity="${gear}"><rect x="128" y="78" width="8" height="34" fill="#555"/><circle cx="132" cy="116" r="12" fill="#111"/><rect x="560" y="78" width="8" height="34" fill="#555"/><circle cx="564" cy="116" r="12" fill="#111"/></g>` : ''}
+    ${lights ? `<circle cx="-8" cy="-118" r="6" fill="#ff5f5f" opacity="${lights}"/><circle cx="740" cy="40" r="5" fill="#fff" opacity="${lights}"/>` : ''}
+  </g>`
+}
+function sky(a, b, c) { return `<defs><linearGradient id="skyg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset=".6" stop-color="${b}"/><stop offset="1" stop-color="${c}"/></linearGradient></defs><rect width="1920" height="1080" fill="url(#skyg)"/>` }
+const mix = (c1, c2, k) => { const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); const a = p(c1), b = p(c2); return '#' + a.map((v, i) => Math.round(L(v, b[i], k)).toString(16).padStart(2, '0')).join('') }
+
+const PALM = (() => {
+  const fr = []
+  for (let i = 0; i < 8; i++) {
+    const y = 900 - i * 60, len = 300 - i * 22
+    fr.push(`M960,${y} Q${960 - 90},${y - 20} ${960 - len},${y - 120 - i * 6}`)
+    fr.push(`M960,${y} Q${960 + 90},${y - 20} ${960 + len},${y - 120 - i * 6}`)
+  }
+  return { trunk: 'M960,1000 L960,430', fronds: fr, crescent: 'M470,820 A500,500 0 1,1 1450,820' }
+})()
+// ============================================================ SCENES
+const FN = {}
+
+// ---- 1. Mumbai at night: hello, and the promise to freeze the world
+FN.open = (lt, dur) => {
+  const arrive = cue('arrive'), snap = cue('snap'), title = cue('title')
+  const walkP = eio(pr(lt, .9, arrive))
+  const sp = speak(lt, { x: 840, y: 250, w: 680, tail: 'lt', origin: '0 30%' })
+  const ra = snapPose(lt, snap) || (lt > arrive + .2 && lt < arrive + 2.0 ? [-150, -20 + Math.sin(lt * 10) * 26] : [-10, 6])
+  const plane1 = `<g opacity=".9">${plane(L(-200, 2100, pr(lt, 0, 12)), L(240, 170, pr(lt, 0, 12)), .18, -4, 0, Math.sin(lt * 8) > 0 ? 1 : .2)}</g>`
+  const camS = L(1.0, 1.1, eio(pr(lt, 0, snap)))
+  const charSvg = `<svg class="full" viewBox="0 0 1920 1080">${razi({ x: L(-220, 600, walkP), y: 960, s: 1.05, t: lt, walk: lt > .9 && lt < arrive, amp: sp.amp, tilt: sp.amp * 3 * Math.sin(lt * 5), ra, glint: pr(lt, arrive + 2.2, arrive + 2.7) })}${sparks(600 + 96 * 1.05 + 30, 960 - 466 * 1.05 - 170, lt, snap)}</svg>`
+  let t = ''
+  if (lt > title - .1) {
+    const k = eo(pr(lt, title, title + .7))
+    const words = ['One', 'trip.', 'Every', 'backend', 'call', 'behind', 'it.']
+    t = `<div class="abs" style="inset:0;background:rgba(5,6,15,${.75 * k})"></div>
+      <div class="abs" style="left:150px;top:300px">
+        <p class="kick" style="opacity:${k}">BOM → DXB → Palm Jumeirah</p>
+        <p class="title" style="font-size:118px;margin-top:20px;width:1500px">${words.map((w, i) => { const q = eo(pr(lt, title + .15 + i * .12, title + .55 + i * .12)); return `<span style="display:inline-block;margin-right:.28em;opacity:${q};transform:translateY(${(1 - q) * 50}px)${i >= 2 ? ';color:transparent;background:linear-gradient(90deg,#5ef0ff,#8b5cff,#ff5fd2);-webkit-background-clip:text' : ''}">${w}</span>` }).join('')}</p></div>`
+  }
+  return cam(mumbaiBg(lt) + `<svg class="full" viewBox="0 0 1920 1080">${plane1}</svg>` + charSvg, camS, 0, 0, 760, 600) +
+    sp.html + `<div class="vignette"></div>` + t + `<div class="fade" style="opacity:${1 - pr(lt, 0, .8)}"></div>` + wipes(lt, dur, false, true)
+}
+
+// ---- 2. The search: one tap, freeze, the fan-out
+FN.search = (lt, dur) => {
+  const ph = cue('phone'), fzA = cue('freeze'), fzB = cue('unfreeze')
+  const f = frozen(lt, fzA, fzB)
+  const typed = (txt, a) => txt.slice(0, Math.floor(cl((lt - a) * 14, 0, txt.length)))
+  const tapAt = ph + 2.4
+  const searching = lt > tapAt, results = lt > fzB + .3
+  const scr = results ? `<p class="app-h">BOM → DXB</p>` + [['Monsoon Jet · Saver', '07:10 → 09:15', 18450], ['Saffron Air · Saver', '10:35 → 12:40', 18990], ['Falcon Airways · Saver', '14:05 → 16:10', 19620], ['Monsoon Jet · Flexi', '19:20 → 21:25', 23540]]
+      .map((r, i) => { const o = eo(pr(lt, fzB + .4 + i * .15, fzB + .8 + i * .15)); return `<div class="row" style="opacity:${o};transform:translateY(${(1 - o) * 20}px)"><span class="l">${r[0]}<small>${r[1]} · nonstop</small></span><span class="p">${inr(r[2])}</span></div>` }).join('')
+    : `<p class="app-h">Search flights</p>
+    <div class="field"><small>From</small><b>${typed('BOM · Mumbai', ph + .2) || '&nbsp;'}</b></div>
+    <div class="field"><small>To</small><b>${typed('DXB · Dubai', ph + 1.2) || '&nbsp;'}</b></div>
+    <div class="field"><small>Depart</small><b>Sat, 20 Dec</b></div>
+    <div class="btn" style="${tap(lt > tapAt - .25 && lt < tapAt)}">${searching ? 'Searching…' : 'Search flights'}</div>
+    ${searching ? `<div class="spin" style="transform:rotate(${Math.min(lt, fzA) * 400}deg)"></div>` : ''}`
+  const pose = stepPose(lt, fzA, fzB)
+  const sp = speak(lt, BOX2)
+  const ra = snapPose(lt, fzB) || (pose.out && lt > vo('fan').s && lt < vo('wait').e ? [-88, -10 + Math.sin(lt * 2) * 4] : [-10, 6])
+  // diagram
+  let diag = ''
+  const d0 = vo('fan').s - .2, d1 = fzB
+  if (lt > d0 && lt < d1 + .4) {
+    const op = Math.min(eo(pr(lt, d0, d0 + .5)), 1 - pr(lt, d1, d1 + .4))
+    const lanes = [['AeroHub', 'aggregator', 170], ['Falcon Direct', 'airline API', 230], ['TripJack', 'production integration', 205]]
+    const r0 = wordAt('fan', 'every supplier')
+    const run = cl((lt - r0) / 2.6)   // slow motion: 230 ms shown over ~2.6 s
+    const panicT = wordAt('safe', 'panics')
+    let lines = '', rows = ''
+    lanes.forEach(([n, sub, ms], i) => {
+      const y = 110 + i * 180
+      const bar = cl(run * 260 / ms)
+      const isPanic = i === 1 && lt > panicT - .2 && lt < vo('safe').e + .3
+      const col = isPanic ? '#ff6b6b' : bar >= 1 ? '#49f5a8' : '#5ef0ff'
+      lines += `<path d="M300,360 C380,360 380,${y + 70} 460,${y + 70}" stroke="#5ef0ff" stroke-opacity=".5" stroke-width="3" fill="none"/>
+        <path d="M820,${y + 70} C840,${y + 70} 840,360 860,360" stroke="#49f5a8" stroke-opacity="${bar >= 1 ? .8 : .12}" stroke-width="3" fill="none"/>`
+      for (let k = 0; k < 3; k++) { const q = (run * 3 + k / 3) % 1; if (run > 0 && run < 1) lines += `<circle cx="${L(300, 460, q)}" cy="${L(360, y + 70, eio(q))}" r="7" fill="#5ef0ff" opacity="${1 - q}"/>` }
+      rows += `<div class="node ${bar >= 1 && !isPanic ? 'on' : ''}" style="left:460px;top:${y}px;width:360px;text-align:left;white-space:nowrap;border-color:${isPanic ? '#ff6b6b' : ''}">${n}<small>${sub}</small>
+        <div style="margin-top:10px;height:10px;border-radius:5px;background:#1c2152"><div style="height:10px;border-radius:5px;width:${bar * 100}%;background:${col}"></div></div>
+        <small style="margin-top:8px;color:${isPanic ? '#ff9b9b' : ''}">${isPanic ? 'panic → recovered by safeGo() ✓' : `goroutine · ${Math.round(Math.min(run * 260, ms))} ms${bar >= 1 ? ' ✓' : ''}`}</small></div>`
+    })
+    const m = pr(lt, wordAt('wait', 'hashmap'), wordAt('wait', 'hashmap') + .4)
+    const raceOn = pr(lt, vo('wait').s, vo('wait').s + .3)
+    const race = cl((lt - vo('wait').s) / 2.2)
+    const codeOn = Math.min(pr(lt, vo('safe').s - .1, vo('safe').s + .4), 1 - pr(lt, vo('safe').e + .2, vo('safe').e + .6))
+    const code = `<span class="k">for</span> _, s := <span class="k">range</span> suppliers {
+    <span class="f">safeGo</span>(<span class="k">func</span>() {      <span class="c">// recovers panics</span>
+        out &lt;- s.<span class="f">Search</span>(ctx, req)
+    })
+}`
+    const chars = Math.floor(cl((lt - vo('safe').s) / 2.0) * 200)
+    diag = `<div class="panel" style="left:800px;top:120px;width:1060px;height:800px;opacity:${op};transform:translateX(${(1 - eo(pr(lt, d0, d0 + .6))) * 80}px)">
+      <svg style="position:absolute;inset:0" width="1060" height="800">${lines}</svg>
+      <div class="node gold" style="left:40px;top:310px;width:260px">Search API<small>Go · one request</small></div>
+      ${rows}
+      <div class="node ${m >= 1 ? 'on' : ''}" style="left:858px;top:290px;width:176px;opacity:${.25 + .75 * m};transform:scale(${1 + .12 * Math.sin(m * Math.PI)})">Match<small>hashmap<br>O(n+m)</small></div>
+      ${run > 0 && run < 1.2 ? `<span class="slowmo" style="left:40px;top:40px">slow motion ×10</span>` : ''}
+      <div style="position:absolute;left:40px;right:40px;bottom:40px;opacity:${raceOn}">
+        <div class="mono" style="font-size:22px;color:#8e96c4;margin-bottom:8px">In parallel: <b style="color:#49f5a8">${Math.round(race * 230)} ms</b></div>
+        <div class="race" style="width:${race * 230 / 605 * 100}%;background:#49f5a8"></div>
+        <div class="mono" style="font-size:22px;color:#8e96c4;margin:14px 0 8px">One after another: <b style="color:#ff8a8a">${Math.round(cl(race * 230 / 605 * 2.63 > 1 ? 605 : race * 605 * 1, 0, 605))} ms</b></div>
+        <div class="race" style="width:${race * 100}%;background:#ff8a8a"></div></div>
+      ${codeOn > 0 ? `<div class="code" style="left:200px;top:420px;width:820px;opacity:${codeOn};transform:translateY(${(1 - codeOn) * 30}px)">${clipHtml(code, chars)}</div>` : ''}
+    </div>`
+  }
+  const camS = L(1, 1.05, pr(lt, 2, fzA))
+  return cam(worldFx(loungeBg(lt) + phone(1200, 140, .95, scr, `opacity:${1 - .97 * (lt > d0 && lt < d1 + .3 ? f : 0)}`), f), camS, 0, 0, 1300, 500) +
+    `<svg class="full" viewBox="0 0 1920 1080">${razi({ x: pose.x, y: pose.y, s: pose.s, t: lt, walk: pose.walk, amp: sp.amp, tilt: sp.amp * 3 * Math.sin(lt * 5), la: pose.out || lt > fzB ? [10, -6] : [6, -128], phone: !pose.out && lt < fzB + .6, ra })}${sparks(pose.x + 110, pose.y - 640 * pose.s, lt, fzB)}</svg>` +
+    freezeFx(lt, fzA, fzB, 'Frozen: behind the scenes') + diag + sp.html + chapterCard(lt, '01', 'The search', 'one tap, every supplier') + wipes(lt, dur, true, true)
+}
+// cut highlighted HTML after n visible characters (tags don't count)
+function clipHtml(html, n) {
+  let out = '', vis = 0, i = 0
+  while (i < html.length && vis < n) {
+    if (html[i] === '<') { const j = html.indexOf('>', i); out += html.slice(i, j + 1); i = j + 1; continue }
+    if (html[i] === '&') { const j = html.indexOf(';', i); out += html.slice(i, j + 1); i = j + 1; vis++; continue }
+    out += html[i++]; vis++
+  }
+  // close any open spans
+  const open = (out.match(/<span/g) || []).length - (out.match(/<\/span>/g) || []).length
+  return out + '</span>'.repeat(Math.max(0, open)) + (vis < n ? '' : '<span class="caret" style="background:#5ef0ff"></span>')
+}
+
+// ---- 3. The price check: the fare-integrity bug
+FN.price = (lt, dur) => {
+  const pick = cue('pick'), check = cue('check'), changed = cue('changed'), fzA = cue('freeze'), fzB = cue('unfreeze'), accept = cue('accept'), ticket = cue('ticket')
+  const f = frozen(lt, fzA, fzB)
+  const accepted = lt > accept + .3
+  const scr = `<p class="app-h">BOM → DXB</p>
+    <div class="row ${lt > pick + .9 ? 'sel' : ''}" style="${tap(lt > pick + .65 && lt < pick + .9)}"><span class="l">Monsoon Jet · Saver<small>07:10 → 09:15 · nonstop</small></span><span class="p">${inr(18450)}</span></div>
+    <div class="row"><span class="l">Saffron Air · Saver<small>10:35 → 12:40 · nonstop</small></span><span class="p">${inr(18990)}</span></div>
+    <div class="row"><span class="l">Falcon Airways · Saver<small>14:05 → 16:10 · nonstop</small></span><span class="p">${inr(19620)}</span></div>
+    ${lt > check && lt < changed ? '<div class="note" style="background:rgba(94,240,255,.08);border:2px solid #5ef0ff">Checking the price with the airline…</div><div class="spin" style="width:44px;height:44px;margin:16px auto;transform:rotate(' + lt * 400 + 'deg)"></div>' : ''}
+    ${lt > changed && !accepted ? `<div class="note warn" style="transform:scale(${1 + .06 * Math.sin(pr(lt, changed, changed + .4) * Math.PI)})">Fare changed: ${inr(18450)} → <b>${inr(19380)}</b>. Accept the new price to continue.</div><div class="btn" style="${tap(lt > accept && lt < accept + .3)}">Accept ${inr(19380)}</div>` : ''}
+    ${accepted ? `<div class="note good">✓ Ticket issued at ${inr(19380)}</div>` : ''}`
+  const pose = stepPose(lt, fzA, fzB)
+  const sp = speak(lt, BOX2)
+  const thumbs = lt > ticket + .8
+  const ra = snapPose(lt, fzB) || (thumbs ? [-20, -150] : pose.out && lt > vo('bug').s && lt < vo('rule').e ? [-88, -10] : [-10, 6])
+  // bug trace (during "bug"), then the safe flow (during "rule")
+  let viz = ''
+  const b0 = vo('bug').s
+  if (lt > b0 - .2 && lt < vo('rule').s + .2) {
+    const op = Math.min(eo(pr(lt, b0 - .2, b0 + .3)), 1 - pr(lt, vo('rule').s - .2, vo('rule').s + .2))
+    const tGo = wordAt('bug', 'Go code'), tQ = wordAt('bug', 'SQL query'), tF = wordAt('bug', 'SQL function')
+    const layers = [['Go service', 'booking flow', tGo], ['SQL query', 'writes the booking row', tQ], ['SQL function', 'kept the old fare', tF]]
+    const ly = (i) => 120 + i * 190
+    let lensY = ly(0) + 50
+    if (lt > tQ) lensY = L(ly(0) + 50, ly(1) + 50, eio(pr(lt, tQ, tQ + .5)))
+    if (lt > tF) lensY = L(ly(1) + 50, ly(2) + 50, eio(pr(lt, tF, tF + .5)))
+    const found = lt > tF + .5
+    viz = `<div class="panel" style="left:840px;top:150px;width:1000px;height:720px;opacity:${op}">
+      <div class="mono" style="position:absolute;left:40px;top:40px;font-size:24px;color:#ff9b9b">Bug: booking saved before the supplier confirmed, old fare kept</div>
+      ${layers.map(([a, b, t0], i) => `<div class="layerbox" style="top:${ly(i)}px;opacity:${.35 + .65 * pr(lt, t0 - .3, t0)};border-color:${i === 2 && found ? '#ff6b6b' : '#2b2f55'}">${a}<small>${b}</small></div>`).join('')}
+      <svg style="position:absolute;inset:0" width="1000" height="720"><g transform="translate(700,${lensY})"><circle r="56" fill="rgba(94,240,255,.08)" stroke="#5ef0ff" stroke-width="7"/><line x1="40" y1="40" x2="92" y2="92" stroke="#5ef0ff" stroke-width="12" stroke-linecap="round"/></g>
+      ${found ? `<g transform="translate(860,${ly(2) + 50}) scale(${eo(pr(lt, tF + .5, tF + .9))})"><ellipse rx="26" ry="32" fill="#ff6b6b"/><circle cy="-36" r="14" fill="#ff6b6b"/>${[-1, 1].map(s => `<path d="M${s * 22},-10 l${s * 22},-12 M${s * 24},6 l${s * 24},0 M${s * 22},20 l${s * 22},12" stroke="#ff6b6b" stroke-width="5"/>`).join('')}</g>` : ''}</svg>
+    </div>`
+  }
+  const r0 = vo('rule').s
+  if (lt > r0 - .2 && lt < fzB + .3) {
+    const op = Math.min(eo(pr(lt, r0 - .2, r0 + .3)), 1 - pr(lt, fzB, fzB + .3))
+    const steps = [['Revalidate', 'does the price still hold?'], ['Hold', 'seat reserved'], ['Confirm', 'supplier says yes'], ['Save + ticket', 'only now']]
+    const k = cl((lt - r0 - .3) / (vo('rule').e - r0)) * 4.15
+    viz += `<div class="panel" style="left:840px;top:150px;width:1000px;height:720px;opacity:${op}">
+      <div class="mono" style="position:absolute;left:40px;top:40px;font-size:24px;color:#49f5a8">The fix: confirm first, write second</div>` +
+      steps.map(([a, b], i) => `<div class="node ${k > i ? 'on' : ''}" style="left:60px;top:${120 + i * 145}px;width:520px;text-align:left;transform:scale(${k > i && k < i + .5 ? 1.04 : 1})">${a}<small>${b}</small></div>` +
+        (i < 3 ? `<div class="abs" style="left:300px;top:${120 + i * 145 + 100}px;width:5px;height:44px;background:${k > i + .5 ? '#49f5a8' : '#2b2f55'}"></div>` : '')).join('') +
+      `<div class="abs" style="left:640px;top:${120 + 3 * 145 + 22}px;font:600 26px Mono;color:${k > 3 ? '#49f5a8' : '#f2c14e'}">${k > 3 ? '✓ written' : '🔒 waits'}</div></div>`
+  }
+  // boarding pass flies at the camera, then settles
+  const bp = eo(pr(lt, ticket, ticket + .9))
+  const pass = bp > 0 ? `<div class="abs" style="left:1020px;top:${L(520, 330, bp)}px;width:680px;height:270px;border-radius:24px;background:#f3f5ff;color:#0a0c22;padding:32px 40px;box-shadow:0 40px 90px rgba(0,0,0,.6);transform:scale(${L(.3, 1, bp) + .25 * Math.sin(bp * Math.PI)}) rotate(${L(18, -4, bp)}deg);opacity:${pr(lt, ticket, ticket + .2)}">
+      <div class="mono" style="font-size:20px;color:#7a3cff">Boarding pass · Monsoon Jet</div>
+      <div style="display:flex;justify-content:space-between;align-items:end;margin-top:12px"><b style="font:800 84px Unbounded">BOM</b><span style="font-size:48px">✈</span><b style="font:800 84px Unbounded">DXB</b></div>
+      <div class="mono" style="font-size:22px;margin-top:16px;display:flex;justify-content:space-between"><span>Razi King</span><span>Seat 14A</span><span>20 Dec · 07:10</span></div></div>` : ''
+  const camS = L(1, 1.12, eio(pr(lt, changed - .2, changed + .6))) * (1 - .0)
+  const camZ = lt < fzA ? camS : L(1.12, 1, eio(pr(lt, fzB, fzB + .8)))
+  return cam(worldFx(loungeBg(lt + 30) + phone(1200, 140, .95, scr, `opacity:${1 - .97 * (lt > vo('bug').s - .2 && lt < fzB + .2 ? f : 0)}`), f), lt < fzA ? camS : camZ, 0, 0, 1390, 640) +
+    `<svg class="full" viewBox="0 0 1920 1080">${razi({ x: pose.x, y: pose.y, s: pose.s, t: lt, walk: pose.walk, amp: sp.amp, tilt: sp.amp * 3 * Math.sin(lt * 5), la: pose.out || lt > fzB + .6 ? [10, -6] : [6, -128], phone: !pose.out && lt < fzB + .6, ra, thumb: thumbs, smile: thumbs })}${sparks(pose.x + 110, pose.y - 640 * pose.s, lt, fzB)}</svg>` +
+    freezeFx(lt, fzA, fzB, 'Frozen: behind the scenes') + viz + pass + sp.html + chapterCard(lt, '02', 'The price check', 'before anything is booked') + wipes(lt, dur, true, true)
+}
+
+// ---- 4. Takeoff from Mumbai
+FN.takeoff = (lt, dur) => {
+  const lift = cue('lift'), clouds = cue('clouds')
+  // ground speed builds up, then the plane climbs and the ground drops away
+  const dist = 40 * lt * lt * 2.2
+  const climb = Math.max(0, lt - lift)
+  const rot = -Math.min(13, climb * 9)
+  const rise = climb * climb * 90
+  const groundY = 820 + rise * .9
+  const k = eio(pr(lt, clouds - .8, dur))
+  let ground = `<rect x="0" y="${groundY}" width="1920" height="400" fill="#0b0d1f"/><rect x="0" y="${groundY + 30}" width="1920" height="60" fill="#14173a"/>`
+  for (let i = 0; i < 40; i++) { const x = ((i * 110 - dist) % 4400 + 4400) % 4400 - 200; ground += `<rect x="${x}" y="${groundY + 56}" width="60" height="6" fill="#f2f2f2" opacity=".7"/><circle cx="${x}" cy="${groundY + 28}" r="5" fill="${i % 2 ? '#5ef0ff' : '#f2c14e'}"/>` }
+  let city = ''
+  for (const [x, w, h] of MUMBAI) city += `<rect x="${((x - dist * .08) % 2100 + 2100) % 2100 - 100}" y="${groundY - h * .45}" width="${w * .6}" height="${h * .45}" fill="#12153a"/>`
+  let cl1 = ''
+  const r = rng(9)
+  for (let i = 0; i < 18; i++) { const y = r() * 1080, w = 300 + r() * 500, x = ((r() * 2600 - (lt - clouds + 1.2) * 1500 * (0.6 + r())) % 2600 + 2600) % 2600 - 400; cl1 += `<ellipse cx="${x}" cy="${y}" rx="${w}" ry="${w * .3}" fill="#fff" opacity="${.85 * pr(lt, clouds - 1.2, clouds - .2) * (1 - pr(lt, clouds + 1.4, dur))}"/>` }
+  const sp = speak(lt, { x: 330, y: 820, w: 420, tail: 'lt', origin: '0 50%' })
+  const shake = lt < lift ? Math.sin(lt * 50) * pr(lt, 1, lift) * 2 : 0
+  return `<svg class="full" viewBox="0 0 1920 1080">${sky(mix('#05060f', '#2a4a8a', k), mix('#1a1450', '#7fa8e0', k), mix('#3a1f5c', '#f2c39a', k))}
+      ${stars(lt, 1 - k)}${city}${ground}
+      <g transform="translate(0,${shake})">${plane(760, 760 - rise * .1 - (lt < lift ? 0 : 0), 1.15, rot, 1 - pr(lt, lift + .6, lift + 1.4), Math.sin(lt * 9) > 0 ? 1 : .3)}</g>
+      ${cl1}</svg>` +
+    `<div class="abs kick" style="left:120px;top:90px;opacity:${pr(lt, .4, 1) * (1 - pr(lt, lift, lift + .6))}">BOM · runway 27 · 06:55</div>` +
+    (sp.html ? badge(130, 800, 170, lt, sp.talk, 'to') + sp.html : '') + `<div class="vignette"></div>` + wipes(lt, dur, true, true)
+}
+
+// ---- 5. Cruising: the integrations
+FN.cruise = (lt, dur) => {
+  let clouds = ''
+  const r = rng(21)
+  for (let i = 0; i < 16; i++) {
+    const s = .4 + r() * .9, y = 560 + r() * 460, w = 200 + r() * 280
+    const x = ((r() * 2400 - lt * 140 * s) % 2400 + 2400) % 2400 - 300
+    clouds += `<ellipse cx="${x}" cy="${y}" rx="${w}" ry="${w * .28}" fill="#fff" opacity="${.06 + s * .07}"/>`
+  }
+  const sp = speak(lt, { x: 560, y: 150, w: 720, tail: 'lt', origin: '0 30%' })
+  const fp = pr(lt, 0, dur)
+  const px = L(330, 1590, fp)
+  const chips = [['TripJack', 'In production', '#49f5a8', 'TripJack'], ['Akasa Air', 'Cleared by QA', '#5ef0ff', 'Akasa'], ['FlyArystan', 'Maintained', '#49f5a8', 'FlyArystan'], ['SalamAir', 'Maintained', '#49f5a8', 'SalamAir'], ['ASL Airlines', 'Maintained', '#49f5a8', 'ASL']]
+  const fu = vo('funnel').s
+  const merge = eio(pr(lt, wordAt('funnel', 'I make'), wordAt('funnel', 'I make') + 1.2))
+  let chipHtml = '', links = ''
+  chips.forEach(([n, s, c, w], i) => {
+    const t0 = wordAt('list', w) - .1
+    const o = eo(pr(lt, t0, t0 + .4))
+    const x0 = 600, y0 = 460 + i * 96
+    chipHtml += `<span class="chip abs" style="left:${x0}px;top:${y0}px;opacity:${o};transform:translateX(${(1 - o) * 40}px) scale(${1 + .1 * Math.sin(o * Math.PI)})"><span class="dot" style="background:${c}"></span>${n} <span class="mono" style="font-size:20px;color:#8e96c4">${s}</span></span>`
+    if (lt > fu) links += `<path d="M1060,${y0 + 32} C1200,${y0 + 32} 1200,700 ${L(1060, 1330, merge)},700" stroke="${c}" stroke-width="4" fill="none" opacity=".7" stroke-dasharray="10 10" stroke-dashoffset="${-lt * 60}"/>`
+  })
+  const flow = lt > fu ? `<div class="node on abs" style="left:1330px;top:600px;width:470px;padding:26px;opacity:${eo(pr(lt, fu + .3, fu + .9))};text-align:left">One booking flow<small>search → price → book → ticket</small></div>` : ''
+  return `<svg class="full" viewBox="0 0 1920 1080">${sky('#0a1240', '#2a5596', '#6c9ad0')}${clouds}
+      <path d="M330,90 Q960,-30 1590,90" stroke="#e8ecff" stroke-opacity=".35" stroke-width="3" stroke-dasharray="10 12" fill="none"/>
+      <text x="330" y="140" text-anchor="middle" font-family="Unbounded" font-weight="700" font-size="30" fill="#e8ecff">BOM</text>
+      <text x="1590" y="140" text-anchor="middle" font-family="Unbounded" font-weight="700" font-size="30" fill="#e8ecff">DXB</text>
+      <g transform="translate(${px},${90 - Math.sin(fp * Math.PI) * 60}) scale(.09)">${plane(0, 0, 1, 0)}</g>
+      <svg x="0" y="0" width="1920" height="1080">${links}</svg></svg>
+    <div class="abs" style="left:90px;top:330px;width:400px;height:540px;border-radius:200px;background:#c9cede;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+      <svg style="width:348px;height:488px;border-radius:174px;background:linear-gradient(180deg,#2d3c6e,#5b7fb8)" viewBox="-170 -770 340 477">
+        <rect x="-170" y="-420" width="340" height="130" fill="#20284a"/>
+        ${razi({ x: 0, y: 0, s: 1, t: lt, amp: sp.amp, id: 'w', shadow: 0, tilt: Math.sin(lt * 1.4) * 2 + sp.amp * 3 * Math.sin(lt * 5), smile: !sp.talk, glint: pr(lt, 1.2, 1.7) })}
+      </svg></div>` + chipHtml + flow + sp.html + chapterCard(lt, '03', 'In the air', 'what I ship every day') + wipes(lt, dur, true, true)
+}
+
+// ---- 6. Landing in Dubai at sunrise
+FN.landing = (lt, dur) => {
+  const touch = cue('touch')
+  const p = pr(lt, 0, touch)
+  const px = L(-100, 900, eo(pr(lt, 0, touch))) + Math.max(0, lt - touch) * 260 * (1 - pr(lt, touch, dur) * .7)
+  const py = L(380, 812, eio(p))
+  let city = ''
+  const r = rng(77)
+  for (let i = 0; i < 24; i++) { const w = 60 + r() * 70, h = 120 + r() * 220; city += `<rect x="${i * 85 - 40}" y="${820 - h}" width="${w}" height="${h}" fill="#4a2d4c" opacity=".85"/>` }
+  const burj = `<path d="M1320,820 L1338,420 L1346,240 L1350,120 L1354,240 L1362,420 L1380,820Z" fill="#3d2442"/>`
+  let smoke = ''
+  if (lt > touch) for (let i = 0; i < 6; i++) { const q = pr(lt, touch + i * .05, touch + 1.2 + i * .05); smoke += `<circle cx="${L(900, 760, q) + i * 30}" cy="${830 - q * 40}" r="${10 + q * 40}" fill="#e8ecff" opacity="${.5 * (1 - q)}"/>` }
+  const shake = lt > touch && lt < touch + .4 ? Math.sin(lt * 80) * 6 * (1 - pr(lt, touch, touch + .4)) : 0
+  const t = eo(pr(lt, touch + .4, touch + 1.2))
+  return `<svg class="full" viewBox="0 0 1920 1080" style="transform:translateY(${shake}px)">${sky('#2b1b4a', '#d0784a', '#f7c66e')}
+      <circle cx="1600" cy="760" r="90" fill="#ffe1a0" opacity=".9"/>${burj}${city}
+      <rect x="0" y="820" width="1920" height="260" fill="#2a1c2e"/><rect x="0" y="846" width="1920" height="50" fill="#3a2a40"/>
+      ${Array.from({ length: 22 }, (_, i) => `<rect x="${i * 100}" y="868" width="56" height="6" fill="#f2f2f2" opacity=".6"/>`).join('')}
+      ${plane(px, py, 1.0, L(6, -4, pr(lt, touch - 1.2, touch)) * (lt < touch + .5 ? 1 : 1 - pr(lt, touch + .5, touch + 1)), 1, 1)}${smoke}</svg>
+    <div class="abs" style="left:140px;top:150px;opacity:${t};transform:translateY(${(1 - t) * 30}px)"><p class="kick">DXB · 08:15 local</p><p class="title" style="font-size:150px">Dubai.</p></div>` + wipes(lt, dur, true, true)
+}
+
+// ---- 7. The transfer booking engine
+FN.transfer = (lt, dur) => {
+  const ph = cue('phone'), fzA = cue('freeze'), fzB = cue('unfreeze')
+  const f = frozen(lt, fzA, fzB)
+  const conf = lt > fzB + .6
+  const found = lt > ph + 1.2
+  const scr = `<p class="app-h">Book a transfer</p>
+    <div class="field"><small>Pick-up</small><b>DXB · Terminal 3</b></div>
+    <div class="field"><small>Drop-off</small><b>Palm Jumeirah</b></div>
+    ${!found ? `<div class="btn" style="${tap(lt > ph + .9 && lt < ph + 1.2)}">Find a ride</div>` : `
+    <div class="row ${lt > ph + 2.2 ? 'sel' : ''}"><span class="l">Sedan · up to 3<small>Meet &amp; greet incl.</small></span><span class="p">AED 165</span></div>
+    <div class="row"><span class="l">SUV · up to 6<small>Extra luggage</small></span><span class="p">AED 230</span></div>`}
+    ${found && !conf ? `<div class="btn" style="${tap(lt > ph + 2.7 && lt < ph + 3.0)}">Book sedan</div>` : ''}
+    ${conf ? `<div class="note good" style="transform:scale(${1 + .06 * Math.sin(pr(lt, fzB + .6, fzB + 1) * Math.PI)})">✓ Booking confirmed · TRF-48213<br><span style="font-weight:500">Driver meets you at Arrivals.</span></div>` : ''}`
+  const pose = stepPose(lt, fzA, fzB)
+  const sp = speak(lt, BOX2)
+  const thumbs = lt > fzB + 1.0
+  const ra = snapPose(lt, fzB) || (thumbs ? [-20, -150] : pose.out && lt > vo('steps').s ? [-88, -10] : [-10, 6])
+  let pipe = ''
+  const d0 = vo('last').e - .6
+  if (lt > d0 && lt < fzB + .4) {
+    const steps = [['Search', 'vehicles + prices', 'search,'], ['Revalidate', 'still available?', 'revalidate'], ['Pre-book', 'hold the ride', 'pre-book'], ['Add-ons', 'child seat, extras', 'add-ons'], ['Confirm', 'booking reference', 'confirm']]
+    const lit = steps.map(s => lt > wordAt('steps', s[2]) - .1)
+    const n = lit.filter(Boolean).length
+    pipe = `<div class="panel" style="left:800px;top:140px;width:1060px;height:780px;opacity:${Math.min(eo(pr(lt, d0, d0 + .5)), 1 - pr(lt, fzB, fzB + .4))}">
+      <div class="mono" style="position:absolute;left:40px;top:30px;font-size:24px;color:#f2c14e">Transfer booking engine · Go</div>
+      <div style="position:absolute;left:60px;top:140px;width:6px;height:${4 * 100}px;background:#1c2152"></div>
+      <div style="position:absolute;left:60px;top:140px;width:6px;height:${Math.max(0, n - 1) * 100}px;background:#49f5a8"></div>
+      ${steps.map(([a, b], i) => `<div class="node ${lit[i] ? 'on' : ''}" style="left:30px;top:${96 + i * 100}px;width:470px;text-align:left;padding:13px 20px 13px 72px;font-size:25px;transform:scale(${lit[i] && lt < wordAt('steps', steps[i][2]) + .3 ? 1.05 : 1})">
+        <span class="abs" style="left:18px;top:18px;width:36px;height:36px;border-radius:50%;background:${lit[i] ? '#49f5a8' : '#1c2152'};color:#05060f;font:700 19px/36px Mono;text-align:center">${i + 1}</span>${a}<small>${b}</small></div>`).join('')}
+      ${[['Amadeus Transfers', 'the supplier API', wordAt('steps', 'Amadeus')], ['Commission rules', 'configurable markups', wordAt('comm', 'Commission')], ['PostgreSQL', 'normalized booking tables', wordAt('comm', 'PostgreSQL')]].map(([a, b, t0], i) => {
+        const o = eo(pr(lt, t0 - .1, t0 + .35)); return `<div class="node gold" style="left:540px;top:${110 + i * 150}px;width:480px;text-align:left;opacity:${o};transform:translateX(${(1 - o) * 40}px)">${a}<small>${b}</small></div>` }).join('')}
+      ${(() => { const t0 = wordAt('comm', 'PostgreSQL') + .4; const rows = [['bookings', 'id · ref · status'], ['booking_items', 'booking_id · vehicle'], ['commissions', 'rule_id · markup']]; return rows.map((r, i) => { const o = eo(pr(lt, t0 + i * .25, t0 + i * .25 + .3)); return `<div class="mono abs" style="left:560px;top:${590 + i * 50}px;font-size:20px;color:#c9d0f5;opacity:${o}"><span style="color:#5ef0ff">${r[0]}</span>  ${r[1]}</div>` }).join('') })()}
+      <div class="mono" style="position:absolute;left:40px;bottom:26px;font-size:20px;color:#8e96c4">Validated in the supplier's test environment</div>
+    </div>`
+  }
+  return cam(worldFx(arrivalsBg(lt) + phone(1200, 150, .95, scr, `opacity:${1 - .97 * (lt > d0 && lt < fzB + .3 ? f : 0)}`), f), L(1, 1.05, pr(lt, 2, fzA)), 0, 0, 1300, 500) +
+    `<svg class="full" viewBox="0 0 1920 1080">${razi({ x: pose.x, y: pose.y, s: pose.s, t: lt, walk: pose.walk, amp: sp.amp, tilt: sp.amp * 3 * Math.sin(lt * 5), la: pose.out || lt > fzB + .6 ? [10, -6] : [6, -128], phone: !pose.out && lt < fzB + .6, ra, thumb: thumbs, smile: thumbs })}${sparks(pose.x + 110, pose.y - 640 * pose.s, lt, fzB)}</svg>` +
+    freezeFx(lt, fzA, fzB, 'Frozen: one last time') + pipe + sp.html + chapterCard(lt, '04', 'The transfer', 'airport to the Palm') + wipes(lt, dur, true, true)
+}
+
+// ---- 8. The drive, then the Palm from above
+FN.drive = (lt, dur) => {
+  const aerial = cue('aerial')
+  if (lt < aerial) {
+    const sx = lt * 160
+    let city = ''
+    const r = rng(44)
+    for (let i = 0; i < 26; i++) { const w = 70 + r() * 80, h = 160 + r() * 260, x = ((i * 120 - sx * .5) % 3120 + 3120) % 3120 - 200; city += `<rect x="${x}" y="${700 - h}" width="${w}" height="${h}" fill="#3a2440" opacity=".9"/>` }
+    const bx = 1400 - sx * .5
+    const burj = `<path d="M${bx},700 L${bx + 18},300 L${bx + 26},120 L${bx + 30},20 L${bx + 34},120 L${bx + 42},300 L${bx + 60},700Z" fill="#2d1c38"/>`
+    let lines = ''
+    for (let i = 0; i < 14; i++) { const x = ((i * 180 - lt * 900) % 2520 + 2520) % 2520 - 300; lines += `<rect x="${x}" y="866" width="90" height="10" fill="#f2c14e" opacity=".8"/>` }
+    const sp = speak(lt, { x: 340, y: 830, w: 560, tail: 'lt', origin: '0 50%' })
+    const car = `<g transform="translate(760,${830 + Math.sin(lt * 20) * 2})">
+      <path d="M0,40 L20,0 Q40,-50 120,-56 L260,-56 Q330,-50 370,0 L420,14 Q440,20 440,40 L440,62 L0,62Z" fill="#e8ecff"/>
+      <path d="M70,-6 L118,-46 L210,-46 L210,-6Z M226,-6 L226,-46 L300,-46 Q336,-40 352,-6Z" fill="#1c2a4a"/>
+      <circle cx="96" cy="64" r="34" fill="#0a0a10"/><circle cx="96" cy="64" r="14" fill="#8e96c4" transform="rotate(${lt * 900} 96 64)"/>
+      <circle cx="350" cy="64" r="34" fill="#0a0a10"/><circle cx="350" cy="64" r="14" fill="#8e96c4"/>
+      <rect x="0" y="30" width="440" height="6" fill="#5ef0ff" opacity=".6"/><circle cx="436" cy="26" r="8" fill="#fff7c2"/></g>`
+    const win = `<svg x="${760 + 226}" y="${830 - 46}" width="74" height="40" viewBox="-80 -650 160 86" preserveAspectRatio="xMidYMin slice">${razi({ x: 0, y: 0, s: 1, t: lt, amp: sp.amp, id: 'c', shadow: 0 })}</svg>`
+    return `<svg class="full" viewBox="0 0 1920 1080">${sky('#1e1446', '#c0583e', '#f2a14e')}${burj}${city}
+      <rect x="0" y="700" width="1920" height="380" fill="#1b1424"/><rect x="0" y="780" width="1920" height="200" fill="#26202f"/>${lines}${car}${win}</svg>` +
+      `<div class="abs kick" style="left:120px;top:90px;opacity:${pr(lt, .3, .9)}">E11 · Sheikh Zayed Road</div>` +
+      badge(130, 820, 170, lt, sp.talk, 'd') + sp.html + wipes(lt, dur, true, false) + (lt > aerial - .5 ? `<div class="fade" style="opacity:${pr(lt, aerial - .5, aerial)}"></div>` : '')
+  }
+  const t2 = lt - aerial, d2 = dur - aerial
+  const draw = eio(pr(t2, .2, 2.4))
+  const carP = eio(pr(t2, 2.0, 4.6))
+  const cy = L(1000, 440, carP)
+  const hotel = pr(t2, 4.4, 4.9)
+  const zoom = L(1.12, 1, eo(pr(t2, 0, 4)))
+  return `<div class="layer" style="transform:scale(${zoom});transform-origin:960px 600px"><svg class="full" viewBox="0 0 1920 1080">
+      <defs><radialGradient id="sea6" cx=".5" cy=".5" r=".7"><stop offset="0" stop-color="#1f6f9a"/><stop offset="1" stop-color="#0a2a4a"/></radialGradient></defs>
+      <rect width="1920" height="1080" fill="url(#sea6)"/>
+      <rect x="0" y="1000" width="1920" height="80" fill="#e6c98a"/>
+      <path d="${PALM.crescent}" stroke="#e6c98a" stroke-width="34" fill="none" pathLength="1" stroke-dasharray="1" stroke-dashoffset="${1 - draw}"/>
+      <path d="${PALM.trunk}" stroke="#e6c98a" stroke-width="44" fill="none" pathLength="1" stroke-dasharray="1" stroke-dashoffset="${1 - draw}"/>
+      ${PALM.fronds.map(f => `<path d="${f}" stroke="#d8ba7a" stroke-width="18" fill="none" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="${1 - draw}"/>`).join('')}
+      <circle cx="960" cy="${cy}" r="16" fill="#5ef0ff"/><circle cx="960" cy="${cy}" r="${26 + Math.sin(t2 * 8) * 5}" fill="none" stroke="#5ef0ff" stroke-width="3" opacity=".6"/>
+      <g opacity="${hotel}"><circle cx="960" cy="440" r="20" fill="#f2c14e"/><text x="960" y="140" text-anchor="middle" font-family="Unbounded" font-weight="700" font-size="52" fill="#fff">Palm Jumeirah</text></g>
+    </svg></div><div class="fade" style="opacity:${1 - pr(t2, 0, .5)}"></div>` + wipes(lt, dur, false, true)
+}
+
+// ---- 9. Sunset on the Palm, then the end card
+FN.outro = (lt, dur) => {
+  const end = cue('end')
+  const sp = speak(lt, { x: 560, y: 170, w: 640, tail: 'rt', origin: '100% 30%' })
+  const ec = eo(pr(lt, end, end + .9))
+  const tag = pr(lt, .5, 1.4) * (1 - pr(lt, end - .4, end))
+  const wave = lt > vo('talk').e - .3 && lt < end
+  const camS = L(1.08, 1, eo(pr(lt, 0, 6)))
+  return cam(`<svg class="full" viewBox="0 0 1920 1080">
+      <defs><linearGradient id="sun7" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#141a33"/><stop offset=".45" stop-color="#5a3a52"/><stop offset=".72" stop-color="#e07a38"/><stop offset=".8" stop-color="#ffb35e"/></linearGradient>
+      <linearGradient id="sea7" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b8643a"/><stop offset="1" stop-color="#1a1424"/></linearGradient></defs>
+      <rect width="1920" height="1080" fill="url(#sun7)"/>
+      <circle cx="1560" cy="${L(750, 800, pr(lt, 0, dur))}" r="74" fill="#ffd38a"/>
+      <rect x="0" y="790" width="1920" height="290" fill="url(#sea7)"/>
+      ${Array.from({ length: 16 }, (_, i) => `<rect x="${1480 + Math.sin(i * 3 + lt * 2) * 30 - i * 4}" y="${800 + i * 16}" width="${160 - i * 6}" height="4" fill="#ffd38a" opacity="${.5 - i * .025}"/>`).join('')}
+      ${[[180, 1.1], [420, .8], [1780, 1.0]].map(([x, s]) => { let f = `<path d="M${x},800 Q${x + 12 * s},${800 - 170 * s} ${x + 6 * s},${800 - 300 * s}" stroke="#1a0f1e" stroke-width="${13 * s}" fill="none"/>`; for (let i = 0; i < 7; i++) { const a = -Math.PI * (.08 + .84 * i / 6) + Math.sin(lt * 1.5 + i) * .04; f += `<path d="M${x + 6 * s},${800 - 300 * s} q${Math.cos(a) * 70 * s},${Math.sin(a) * 46 * s} ${Math.cos(a) * 150 * s},${Math.sin(a) * 22 * s + 56 * s}" stroke="#1a0f1e" stroke-width="${11 * s}" fill="none" stroke-linecap="round"/>` } return f }).join('')}
+      ${razi({ x: 1360, y: 1070, s: 1.38, t: lt, amp: sp.amp, tilt: -2 + sp.amp * 3 * Math.sin(lt * 5), pockets: !wave, ra: wave ? [-150, -20 + Math.sin(lt * 10) * 24] : undefined, id: 'f', shadow: .5, glint: lt > end ? pr(lt, end + 1.4, end + 2.0) : pr(lt, .8, 1.3), smile: wave || lt > end })}
+    </svg>`, camS, 0, 0, 1360, 400) +
+    `<div class="abs" style="left:150px;top:300px;opacity:${tag};font:500 30px/2 Inst;letter-spacing:.32em;color:#fff">Same boy.<br>Bigger dreams.<br>Better moves.<div style="width:110px;height:2px;background:#fff;margin-top:20px"></div></div>` +
+    sp.html +
+    (ec > 0 ? `<div class="abs" style="inset:0;background:linear-gradient(90deg,rgba(5,6,15,${.92 * ec}) 45%,rgba(5,6,15,${.35 * ec}))"></div>
+      <div class="abs" style="left:150px;top:290px;opacity:${ec};transform:translateY(${(1 - ec) * 30}px)">
+        <p class="kick">Backend engineer (Go) · Travel tech · Mumbai</p>
+        <p class="title" style="font-size:140px;margin-top:20px;background:linear-gradient(90deg,#5ef0ff,#8b5cff 60%,#ff5fd2);-webkit-background-clip:text;color:transparent">Razi King</p>
+        <p style="font:500 34px/1.6 Inst;margin-top:26px;color:#c9d0f5">github.com/razi-king<br>raziinsane@gmail.com</p></div>
+` : '') +
+    wipes(lt, dur, true, false) + `<div class="fade" style="opacity:${pr(lt, dur - .9, dur)}"></div>`
+}
+
+// ------------------------------------------------------------ driver
+window.TOTAL = TL.reduce((a, s) => a + s.dur, 0)
+window.SCENES = TL.map(s => [s.start, s.dur])
+window.render = (t) => {
+  let i = TL.length - 1
+  while (i > 0 && t < TL[i].start) i--
+  SC = TL[i]
+  document.getElementById('stage').innerHTML = FN[SC.name](t - SC.start, SC.dur)
+}
+render(+(location.hash.slice(1) || 0))
+</script>
+</body>
+</html>

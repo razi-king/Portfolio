@@ -1,0 +1,8 @@
+parts/
+vo/
+voices/
+*.wav
+*.npy
+silent.mp4
+list.txt
+trip.mp4
