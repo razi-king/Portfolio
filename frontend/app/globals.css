@@ -352,6 +352,11 @@ main, .footer { position: relative; z-index: 2; }
 @keyframes marquee { to { transform: translateX(-50%); } }
 
 /* ================================================================ strengths */
+.trip-video { margin: 2.2rem 0 0; padding: 1.4rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr); gap: 1.6rem; align-items: center; }
+.trip-video h3 { margin: 0 0 .6rem; font: 600 1.3rem / 1.25 var(--display); }
+.trip-video p { margin: 0; color: var(--text-dim); }
+.trip-video video { width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; background: #000; display: block; }
+@media (max-width: 860px) { .trip-video { grid-template-columns: 1fr; padding: 1rem; } }
 .strengths { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; }
 .strength {
   overflow: hidden; display: flex; flex-direction: column; gap: .7rem;
@@ -405,7 +410,7 @@ main, .footer { position: relative; z-index: 2; }
 }
 .status i { width: .45rem; height: .45rem; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
 .status-live { color: var(--ok); }
-.status-cleared { color: var(--cyan); }
+.status-cleared, .status-demo, .status-tested { color: var(--cyan); }
 .status-awaiting, .status-deploying { color: var(--gold); }
 .status-in-progress { color: #b9a2ff; }
 @media (prefers-reduced-motion: no-preference) {

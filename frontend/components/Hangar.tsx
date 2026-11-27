@@ -8,6 +8,7 @@ import { SectionHead } from './Sections'
 type Filter = 'all' | Category
 const FILTERS: { id: Filter; label: string }[] = [
   { id: 'all', label: 'All' },
+  { id: 'backend', label: 'Backend' },
   { id: 'fullstack', label: 'Full-stack' },
   { id: 'frontend', label: 'Frontend' },
 ]

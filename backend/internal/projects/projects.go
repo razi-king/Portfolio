@@ -25,7 +25,7 @@ type Project struct {
 	Tagline     string   `json:"tagline"`
 	Description string   `json:"description"`
 	Category    string   `json:"category"` // backend | frontend | fullstack
-	Status      string   `json:"status"`   // live | deploying | in-progress
+	Status      string   `json:"status"`   // live | demo | tested | cleared | awaiting | deploying | in-progress
 	Highlights  []string `json:"highlights"`
 	Stack       []string `json:"stack"`
 	Repo        string   `json:"repo,omitempty"`

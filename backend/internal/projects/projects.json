@@ -26,6 +26,145 @@
     "featured": true
   },
   {
+    "slug": "flight-search-aggregator",
+    "title": "Flight Search Aggregator",
+    "tagline": "Asks every airline supplier at once and returns the best fares, even when some fail",
+    "description": "A Go service that fans a search out to several suppliers in parallel, merges the answers, removes duplicates and keeps the cheapest fare per flight. Slow or broken suppliers never slow down or break the whole search.",
+    "category": "backend",
+    "status": "tested",
+    "highlights": [
+      "Fan-out/fan-in with goroutines, channels and per-supplier timeouts",
+      "Circuit breaker per supplier and singleflight: 100 identical searches cause 1 fan-out",
+      "Redis cache or an O(1) in-memory LRU, chosen at start-up",
+      "O(n) hash-map dedupe and a top-K heap, benchmarked against the naive versions"
+    ],
+    "stack": [
+      "Go",
+      "Redis",
+      "Docker",
+      "GitHub Actions"
+    ],
+    "repo": "https://github.com/razi-king/flight-search-aggregator",
+    "featured": false
+  },
+  {
+    "slug": "booking-engine",
+    "title": "Booking Engine",
+    "tagline": "Seat booking that can never sell the same seat twice",
+    "description": "A flight seat-booking engine in Go and PostgreSQL. A test proves the point: with naive code 10 of 10 concurrent users were told they won seat 15A; with this engine's row locks exactly 1 of 50 wins, every time.",
+    "category": "backend",
+    "status": "demo",
+    "highlights": [
+      "SELECT … FOR UPDATE row locks, taken in a fixed order so they can't deadlock",
+      "10-minute seat holds that expire through a min-heap scheduler",
+      "Idempotency-Key header, so a retried payment replays the first response",
+      "Postgres and in-memory stores pass one shared contract test suite"
+    ],
+    "stack": [
+      "Go",
+      "PostgreSQL",
+      "Docker",
+      "GitHub Actions"
+    ],
+    "repo": "https://github.com/razi-king/booking-engine",
+    "live": "https://razi-king.github.io/booking-engine/",
+    "featured": false
+  },
+  {
+    "slug": "go-microservices",
+    "title": "Go Microservices",
+    "tagline": "Three services joined by gRPC and Kafka, deployed to Kubernetes in CI",
+    "description": "A flight booking system split into booking, inventory and notification services, built around the hard parts: calls that fail, events that get lost or duplicated, and requests you need to follow across processes.",
+    "category": "backend",
+    "status": "tested",
+    "highlights": [
+      "Saga with compensation and a transactional outbox to Kafka",
+      "Idempotent gRPC calls with retries and deadlines",
+      "Consumer dedupe by event ID, retry with backoff, then a dead-letter topic",
+      "One trace follows a request through HTTP, gRPC and Kafka in Jaeger"
+    ],
+    "stack": [
+      "Go",
+      "gRPC",
+      "Kafka",
+      "Kubernetes",
+      "Jaeger",
+      "Docker"
+    ],
+    "repo": "https://github.com/razi-king/go-microservices",
+    "featured": false
+  },
+  {
+    "slug": "api-gateway",
+    "title": "API Gateway",
+    "tagline": "One front door that routes, authenticates, rate-limits and balances load",
+    "description": "A Go gateway for a set of services: it matches each request to a route, checks the caller's JWT, limits how often they may call, spreads load over healthy backends and records metrics for everything.",
+    "category": "backend",
+    "status": "tested",
+    "highlights": [
+      "Route lookup in a path-segment trie: 260 ns at 1,000 routes vs 18 µs for a linear scan",
+      "Distributed token bucket in Redis via an atomic Lua script",
+      "Round robin over healthy backends, with active and passive health checks",
+      "Prometheus metrics, latency histograms and JSON access logs"
+    ],
+    "stack": [
+      "Go",
+      "Redis",
+      "JWT",
+      "Prometheus",
+      "Docker"
+    ],
+    "repo": "https://github.com/razi-king/api-gateway",
+    "featured": false
+  },
+  {
+    "slug": "fare-alerts",
+    "title": "Fare Drop Alerts",
+    "tagline": "Tells you by email or Telegram when a route's fare drops below your price",
+    "description": "Users create alerts; a scheduler decides when each route is due; workers check fares through RabbitMQ and send notifications when a fare drops. 10,000 alerts on 300 routes cost 300 fare calls per round.",
+    "category": "backend",
+    "status": "demo",
+    "highlights": [
+      "Min-heap scheduler with one job per route, not per alert",
+      "Adaptive polling: routes close to departure are checked more often",
+      "Retries with backoff, then a dead-letter exchange",
+      "Hysteresis and compare-and-set claims, so nobody gets the same alert twice"
+    ],
+    "stack": [
+      "Go",
+      "RabbitMQ",
+      "PostgreSQL",
+      "Docker"
+    ],
+    "repo": "https://github.com/razi-king/fare-alerts",
+    "live": "https://razi-king.github.io/fare-alerts/",
+    "featured": false
+  },
+  {
+    "slug": "url-shortener",
+    "title": "URL Shortener with Analytics",
+    "tagline": "Short codes that never collide, and click analytics that never slow a redirect",
+    "description": "The classic system-design question, built properly: codes come from a scrambled counter, redirects rarely touch the database, and clicks stream through Kafka into batched analytics.",
+    "category": "backend",
+    "status": "demo",
+    "highlights": [
+      "Base62 over a bijective scramble: 200,000 codes, 0 collisions",
+      "Bloom filter rejects unknown codes before Redis or Postgres",
+      "HyperLogLog counts unique visitors in 1 KB per link",
+      "Clicks buffered and sent to Kafka in batches of up to 500"
+    ],
+    "stack": [
+      "Go",
+      "Redis",
+      "Kafka",
+      "PostgreSQL",
+      "Docker"
+    ],
+    "repo": "https://github.com/razi-king/url-shortener",
+    "live": "https://razi-king.github.io/url-shortener/",
+    "featured": false
+  },
+  {
     "slug": "expense-tracker",
     "title": "Expense Tracker",
     "tagline": "Personal finance dashboard with secure JWT auth",

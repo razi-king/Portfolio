@@ -1,6 +1,6 @@
 import projectsJson from './projects.json'
 
-export type Status = 'live' | 'cleared' | 'awaiting' | 'deploying' | 'in-progress'
+export type Status = 'live' | 'cleared' | 'awaiting' | 'deploying' | 'in-progress' | 'demo' | 'tested'
 export type Category = 'fullstack' | 'frontend' | 'backend'
 
 export interface Project {
@@ -26,6 +26,8 @@ export const statusLabel: Record<Status, string> = {
   awaiting: 'Awaiting supplier',
   deploying: 'Deploying soon',
   'in-progress': 'Building',
+  demo: 'Live demo',
+  tested: 'Tested in CI',
 }
 
 export const categoryLabel: Record<Category, string> = {

@@ -122,7 +122,32 @@ export function Strengths() {
           </article>
         ))}
       </div>
+      <TripVideo />
     </section>
+  )
+}
+
+/** A 90-second animated walk-through: one trip from Mumbai to the Palm, paused at each backend step. */
+function TripVideo() {
+  return (
+    <figure className="trip-video hud" data-reveal>
+      <div className="trip-video-text">
+        <h3>Ride along: Mumbai to Palm Jumeirah</h3>
+        <p>
+          A 90-second trip that pauses at each step to show the backend behind it: the parallel flight search, the
+          price check before booking, and the transfer booking engine.
+        </p>
+      </div>
+      <video
+        controls
+        playsInline
+        preload="none"
+        poster={`${BASE_PATH}/video/trip-poster.jpg`}
+        aria-label="Animated video: Razi flies from Mumbai to Dubai, books a transfer and explains the Go services behind each step"
+      >
+        <source src={`${BASE_PATH}/video/trip-bom-dxb.mp4`} type="video/mp4" />
+      </video>
+    </figure>
   )
 }
 
